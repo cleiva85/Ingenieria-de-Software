@@ -1,0 +1,44 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-ServiceDonanteApplication<service-donante>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.abrazame.service.donante.ServiceDonanteApplication",
+            "projectName": "service-donante",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ServiceGestionApplication<service-gestion>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.abrazame.service_gestion.ServiceGestionApplication",
+            "projectName": "service-gestion",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ServiceGatewayApplication<service-gateway>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.abrazame.service_gateway.ServiceGatewayApplication",
+            "projectName": "service-gateway",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ServiceCatalogoApplication<service-catalogo>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.abrazame.service_catalogo.ServiceCatalogoApplication",
+            "projectName": "service-catalogo",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
