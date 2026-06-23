@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fundación Abrázame — Acceso Usuarios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --green:#8DC5A0;--green-dark:#6aaa85;--green-light:#EBF5EE;
+      --lilac:#C4A8D4;--lilac-dark:#a888be;--lilac-light:#F2EDF7;
+      --white:#FFFFFF;--gray:#6B7280;--border:#E5E7EB;--text:#3D3D3D;--radius:10px;
+      --blue-bg:#EBF5EE;--slate-dark:#2D2D2D;
+      --error:#DC2626;--error-bg:#FEF2F2;--error-border:#FECACA;
+      --success:#059669;--success-bg:#ECFDF5;--success-border:#6EE7B7;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Raleway',sans-serif;background:linear-gradient(135deg,#EBF5EE 0%,#F2EDF7 50%,#FEF0F2 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px 60px;}
+    .card{width:100%;max-width:480px;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 12px 48px rgba(141,197,160,0.18);}
+    .header{background:#fff;padding:28px 32px 22px;display:flex;align-items:center;gap:16px;border-bottom:2px solid var(--green-light);}
+    .logo-wrap{width:62px;height:62px;flex-shrink:0;background:var(--green-light);border-radius:14px;display:flex;align-items:center;justify-content:center;}
+    .logo-wrap span{font-size:1.9rem;}
+    .header-text h1{font-weight:800;font-size:1.4rem;color:var(--slate-dark);}
+    .header-text p{font-size:0.73rem;letter-spacing:0.1em;color:var(--gray);margin-top:3px;text-transform:uppercase;}
+    .role-banner{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--blue-bg);padding:10px 20px;border-bottom:1px solid var(--border);}
+    .role-pill{font-size:0.75rem;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;padding:5px 14px;border-radius:50px;}
+    .pill-green{background:var(--green);color:#fff;}
+    .pill-lilac{background:var(--lilac);color:#fff;}
+    .tabs{display:flex;background:var(--blue-bg);}
+    .tab{flex:1;padding:14px 0;text-align:center;font-size:0.82rem;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;cursor:pointer;color:var(--gray);border:none;background:transparent;border-bottom:3px solid transparent;transition:all 0.2s;}
+    .tab.active{color:var(--green-dark);border-bottom-color:var(--green-dark);background:#fff;}
+    .form-body{padding:28px 32px 32px;}
+    .rf-badge{display:flex;align-items:center;gap:8px;background:var(--green-light);border:1px solid var(--green);border-radius:8px;padding:10px 14px;margin-bottom:22px;font-size:0.77rem;color:var(--green-dark);font-weight:700;}
+    .field{margin-bottom:16px;}
+    .field label{display:block;font-size:0.79rem;font-weight:800;color:var(--text);margin-bottom:5px;}
+    .req{color:var(--error);margin-left:2px;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    input[type="text"],input[type="email"],input[type="password"],input[type="tel"],input[type="date"],select{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Raleway',sans-serif;font-size:0.88rem;color:var(--text);background:#fff;transition:border-color 0.2s,box-shadow 0.2s;outline:none;}
+    input::placeholder{color:#A0AEC0;}
+    input:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(141,197,160,0.2);}
+    input.error-inp{border-color:var(--error);background:var(--error-bg);}
+    input.valid-inp{border-color:var(--success);}
+    select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:38px;}
+    .hint{font-size:0.73rem;color:var(--gray);margin-top:4px;}
+    .field-error{font-size:0.73rem;color:var(--error);margin-top:4px;display:none;}
+    .field-error.show{display:block;}
+    .rut-wrap,.pass-wrap{position:relative;}
+    .rut-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:0.9rem;display:none;}
+    .pass-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--gray);}
+    .pass-toggle:hover{color:var(--green-dark);}
+    .terms-row{display:flex;align-items:flex-start;gap:10px;margin-top:4px;}
+    .terms-row input[type="checkbox"]{width:17px;height:17px;margin-top:2px;accent-color:var(--green);flex-shrink:0;}
+    .terms-row span{font-size:0.82rem;color:var(--text);line-height:1.5;}
+    .terms-row a{color:var(--green-dark);font-weight:700;text-decoration:underline;}
+    .submit-btn{width:100%;background:var(--green);color:#fff;font-family:'Raleway',sans-serif;font-size:0.9rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:15px 24px;border:none;border-radius:50px;cursor:pointer;margin-top:22px;transition:background 0.2s,transform 0.15s;box-shadow:0 4px 18px rgba(141,197,160,0.3);display:flex;align-items:center;justify-content:center;gap:8px;}
+    .submit-btn:hover{background:var(--green-dark);transform:translateY(-2px);}
+    .submit-btn.loading{opacity:0.7;cursor:not-allowed;pointer-events:none;}
+    .spinner{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;}
+    .submit-btn.loading .spinner{display:inline-block;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .link-btn{display:block;text-align:center;margin-top:14px;font-size:0.82rem;color:var(--gray);font-weight:600;cursor:pointer;background:none;border:none;width:100%;text-decoration:underline;}
+    .link-btn:hover{color:var(--green-dark);}
+    .divider{display:flex;align-items:center;gap:12px;margin:20px 0;}
+    .divider hr{flex:1;border:none;border-top:1px solid var(--border);}
+    .divider span{font-size:0.75rem;color:var(--gray);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;}
+    .alert{padding:12px 16px;border-radius:var(--radius);font-size:0.82rem;font-weight:700;margin-bottom:16px;display:none;}
+    .alert.show{display:block;}
+    .alert-ok{background:var(--success-bg);color:var(--success);border:1px solid var(--success-border);}
+    .alert-err{background:var(--error-bg);color:var(--error);border:1px solid var(--error-border);}
+    .sec-header{display:inline-block;background:var(--green);color:#fff;font-size:0.77rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:7px 18px;border-radius:50px;margin-bottom:16px;margin-top:4px;}
+    .sec-header.lilac{background:var(--lilac);}
+    .roles-info{background:var(--blue-bg);border-radius:8px;padding:10px 14px;margin-top:6px;font-size:0.75rem;color:var(--gray);}
+    .admin-link-wrap{text-align:center;padding:14px 32px 20px;border-top:1px solid var(--border);background:#F8F9FA;}
+    .admin-link-wrap p{font-size:0.78rem;color:var(--gray);}
+    .admin-link-wrap a{color:var(--green-dark);font-weight:800;text-decoration:underline;}
+    /* SUCCESS */
+    .success-overlay{display:none;position:fixed;inset:0;background:rgba(26,62,143,0.45);backdrop-filter:blur(4px);z-index:99999;align-items:center;justify-content:center;}
+    .success-overlay.show{display:flex;}
+    .success-box{background:#fff;border-radius:24px;padding:44px 36px 36px;max-width:380px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(141,197,160,0.25);}
+    .success-icon{width:72px;height:72px;background:linear-gradient(135deg,#8DC5A0,#6aaa85);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:2rem;}
+    .success-box h2{font-weight:800;font-size:1.3rem;color:var(--slate-dark);margin-bottom:8px;}
+    .success-box p{font-size:0.88rem;color:var(--gray);line-height:1.6;margin-bottom:24px;}
+    .success-close{background:var(--green);color:#fff;border:none;border-radius:50px;padding:13px 36px;font-family:'Raleway',sans-serif;font-size:0.88rem;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;}
+    .success-close:hover{background:var(--green-dark);}
+    @media(max-width:520px){.form-body{padding:22px 18px 26px;}.header{padding:20px 18px 16px;}.field-row{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+
+<!-- URL del backend — cámbiala si usas otro puerto -->
+<script>const API = 'http://localhost:8081/auth';</script>
+
+<!-- SUCCESS overlay registro -->
+<div class="success-overlay" id="verifyOverlay">
+  <div class="success-box">
+    <div class="success-icon">✅</div>
+    <h2>¡Cuenta creada!</h2>
+    <p>Tu cuenta fue registrada exitosamente. Ya puedes iniciar sesión.</p>
+    <button class="success-close" onclick="document.getElementById('verifyOverlay').classList.remove('show');switchTab('login')">
+      Ir a Iniciar Sesión
+    </button>
+  </div>
+</div>
+
+<!-- SUCCESS overlay login -->
+<div class="success-overlay" id="loginOverlay">
+  <div class="success-box">
+    <div class="success-icon">🎉</div>
+    <h2>¡Bienvenido/a!</h2>
+    <p id="loginMsg">Sesión iniciada correctamente. Redirigiendo…</p>
+    <button class="success-close" id="loginRedirectBtn">Continuar →</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="header">
+    <!-- LOGO IMAGEN 7 -->
+    <div class="logo-wrap" style="background:#f0f4f8;border-radius:14px;overflow:hidden;">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width:62px;height:62px;">
+        <!-- Arco verde (arriba-derecha) -->
+        <path d="M50 18 A34 34 0 0 1 84 68" stroke="#8DC5A0" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <!-- Arco rosa (izquierda) -->
+        <path d="M16 68 A34 34 0 0 1 50 18" stroke="#E8A0B0" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <!-- Arco lila (abajo) -->
+        <path d="M84 68 A34 34 0 0 1 16 68" stroke="#C4A8D4" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <!-- Figura verde (arriba) -->
+        <circle cx="50" cy="14" r="7" fill="#8DC5A0"/>
+        <!-- Figura rosa (izquierda) -->
+        <circle cx="13" cy="70" r="7" fill="#E8A0B0"/>
+        <!-- Figura lila (derecha) -->
+        <circle cx="87" cy="70" r="7" fill="#C4A8D4"/>
+        <!-- Figura central: cuerpo -->
+        <circle cx="50" cy="46" r="10" fill="#6B7CA4"/>
+        <!-- Sonrisa -->
+        <path d="M45 50 Q50 55 55 50" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="header-text">
+      <h1>Fundación Abrázame</h1>
+      <p>Portal de Acceso</p>
+    </div>
+  </div>
+
+  <!-- SOLO PANEL LOGIN — sin tabs Registrarse, sin banner Donante/Empresa -->
+  <div id="panelLogin" class="form-body">
+    <div class="rf-badge"><span>🔐</span><div>Máx. <strong>3 intentos</strong> antes de bloqueo temporal de 15 min.</div></div>
+    <div id="alertLogin" class="alert"></div>
+    <div class="field"><label>Correo Electrónico <span class="req">*</span></label><input type="email" id="l_email" placeholder="nombre@correo.com" oninput="validateEmailLive(this,'err_email_l')"/><div class="field-error" id="err_email_l">Correo inválido.</div></div>
+    <div class="field"><label>Contraseña <span class="req">*</span></label><div class="pass-wrap"><input type="password" id="l_pass" placeholder="Tu contraseña"/><button class="pass-toggle" type="button" onclick="togglePass('l_pass',this)">👁️</button></div><div class="field-error" id="err_l_pass">Ingresa tu contraseña.</div></div>
+    <div class="field">
+      <label>Rol <span class="req">*</span></label>
+      <!-- PUNTO 4: Solo Voluntario, Admin, Director, SuperAdmin -->
+      <select id="l_rol">
+        <option value="">— Selecciona tu rol —</option>
+        <option value="Voluntario">🙋 Voluntario/a</option>
+        <option value="Admin">👩‍💼 Administrador/a</option>
+        <option value="Director">📋 Director/a</option>
+        <option value="SuperAdmin">🔑 Super Administrador</option>
+      </select>
+      <div class="field-error" id="err_l_rol">Selecciona tu rol.</div>
+    </div>
+    <button class="submit-btn" id="btnLogin" onclick="doLogin()"><span class="spinner"></span>Ingresar</button>
+    <button class="link-btn" onclick="showRecover()">¿Olvidaste tu contraseña?</button>
+    <div class="divider"><hr/><span>o</span><hr/></div>
+    <button class="link-btn" style="color:var(--green-dark);font-weight:800;" onclick="window.location.href='index.html'">← Volver al inicio</button>
+  </div>
+
+  <div class="admin-link-wrap">
+    <p>¿Eres personal de la fundación? <a href="login_admin.html">Acceso Administrativo →</a></p>
+    <p style="margin-top:6px;">¿Eres voluntario/a? <a href="login_voluntario.html">Portal Voluntarios →</a></p>
+  </div>
+</div>
+
+<script>
+/* ── CONFIG ── */
+// Si el backend corre en otro puerto o servidor, cámbialo aquí:
+// const API = 'http://localhost:8081/auth';  (ya definido arriba)
+
+/* ── TABS ── */
+function switchTab(tab){
+  document.getElementById('tabRegister').classList.toggle('active',tab==='register');
+  document.getElementById('tabLogin').classList.toggle('active',tab==='login');
+  document.getElementById('panelRegister').style.display=tab==='register'?'block':'none';
+  document.getElementById('panelLogin').style.display=tab==='login'?'block':'none';
+  clearAlerts();
+}
+
+/* ── UTILS ── */
+function showAlert(id,msg,type){const el=document.getElementById(id);el.textContent=msg;el.className='alert alert-'+(type||'err')+' show';}
+function clearAlerts(){document.querySelectorAll('.alert').forEach(e=>e.classList.remove('show'));}
+function showErr(id,show=true){const el=document.getElementById(id);if(el)el.classList.toggle('show',show);}
+function togglePass(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='text'?'🙈':'👁️';}
+function validateEmailLive(inp,errId){const ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inp.value.trim());inp.classList.toggle('error-inp',inp.value.length>2&&!ok);inp.classList.toggle('valid-inp',ok);showErr(errId,inp.value.length>2&&!ok);}
+
+/* ── RUT ── */
+function cleanRut(r){return r.replace(/[^0-9kK]/g,'');}
+function rutDv(r){let s=0,m=2,b=cleanRut(r).slice(0,-1);for(let i=b.length-1;i>=0;i--){s+=parseInt(b[i])*m;m=m===7?2:m+1;}const x=11-(s%11);return x===11?'0':x===10?'K':String(x);}
+function formatRut(inp){let v=cleanRut(inp.value);if(!v.length){inp.value='';return;}const dv=v.slice(-1).toUpperCase();let b=v.slice(0,-1).replace(/\B(?=(\d{3})+(?!\d))/g,'.');inp.value=v.length>1?(b+'-'+dv):v;const icon=document.getElementById('rut_icon');if(v.length>=7){const ok=rutDv(v)===dv;inp.classList.toggle('error-inp',!ok);inp.classList.toggle('valid-inp',ok);icon.style.display='block';icon.textContent=ok?'✅':'❌';showErr('err_rut',!ok);}else{inp.classList.remove('error-inp','valid-inp');icon.style.display='none';showErr('err_rut',false);}}
+
+/* ── REGISTRO (llama a POST /auth/register) ── */
+async function doRegister(){
+  clearAlerts();
+  let ok=true;
+  if(!document.getElementById('r_nombre').value.trim()){showErr('err_nombre');ok=false;}else showErr('err_nombre',false);
+  if(!document.getElementById('r_apellido_p').value.trim()){showErr('err_apellido_p');ok=false;}else showErr('err_apellido_p',false);
+  if(!document.getElementById('r_apellido_m').value.trim()){showErr('err_apellido_m');ok=false;}else showErr('err_apellido_m',false);
+  const rut=document.getElementById('r_rut');
+  if(rut.classList.contains('error-inp')||!rut.value.trim()){showErr('err_rut');ok=false;}
+  if(!document.getElementById('r_fecha').value){showErr('err_fecha');ok=false;}else showErr('err_fecha',false);
+  const tel=document.getElementById('r_telefono').value.trim();
+  if(!tel||tel.length<7){showErr('err_telefono');ok=false;}else showErr('err_telefono',false);
+  const email=document.getElementById('r_email').value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showErr('err_email_r');ok=false;}else showErr('err_email_r',false);
+  const pass=document.getElementById('r_pass').value;
+  if(pass.length<8){showErr('err_pass');ok=false;}else showErr('err_pass',false);
+  if(document.getElementById('r_pass2').value!==pass){showErr('err_pass2');ok=false;}else showErr('err_pass2',false);
+  const rol=document.getElementById('r_rol').value;
+  if(!rol){showErr('err_rol');ok=false;}else showErr('err_rol',false);
+  if(!document.getElementById('r_terms').checked){showErr('err_terms');ok=false;}else showErr('err_terms',false);
+  if(!ok){showAlert('alertRegister','⚠️ Corrige los errores marcados antes de continuar.','err');return;}
+
+  const btn=document.getElementById('btnRegister');
+  btn.classList.add('loading');
+  try {
+    const res = await fetch(API+'/register',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        nombre: document.getElementById('r_nombre').value.trim(),
+        nombre2: document.getElementById('r_nombre2').value.trim(),
+        apellidoP: document.getElementById('r_apellido_p').value.trim(),
+        apellidoM: document.getElementById('r_apellido_m').value.trim(),
+        rut: rut.value.trim(),
+        fechaNacimiento: document.getElementById('r_fecha').value,
+        telefono: tel,
+        email, password: pass, rol
+      })
+    });
+    const data = await res.json();
+    if(data.success){
+      document.getElementById('verifyOverlay').classList.add('show');
+    } else {
+      showAlert('alertRegister','❌ '+data.mensaje,'err');
+    }
+  } catch(e){
+    showAlert('alertRegister','⚠️ No se pudo conectar con el servidor. Verifica que service-auth esté corriendo en el puerto 8081.','err');
+  } finally {
+    btn.classList.remove('loading');
+  }
+}
+
+/* ── LOGIN (llama a POST /auth/login) ── */
+async function doLogin(){
+  clearAlerts();
+  const email=document.getElementById('l_email').value.trim();
+  const pass=document.getElementById('l_pass').value;
+  const rol=document.getElementById('l_rol').value;
+  let ok=true;
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showErr('err_email_l');ok=false;}else showErr('err_email_l',false);
+  if(!pass){showErr('err_l_pass');ok=false;}else showErr('err_l_pass',false);
+  if(!rol){showErr('err_l_rol');ok=false;}else showErr('err_l_rol',false);
+  if(!ok) return;
+
+  const btn=document.getElementById('btnLogin');
+  btn.classList.add('loading');
+  try {
+    const res = await fetch(API+'/login',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({email, password: pass, rol})
+    });
+    const data = await res.json();
+    if(data.success){
+      // Punto 7: redirigir según el rol seleccionado
+      const rolSeleccionado = document.getElementById('l_rol').value;
+      const destinos = {
+        'Voluntario':  'vista_voluntario.html',
+        'Admin':       'panel_admin.html',
+        'Director':    'vista_director.html',
+        'SuperAdmin':  'vista_superadmin.html'
+      };
+      const destino = destinos[rolSeleccionado] || data.redirectUrl || 'index.html';
+      document.getElementById('loginMsg').innerHTML=
+        `Sesión iniciada como <strong>${data.nombre || rol}</strong>. Redirigiendo…`;
+      document.getElementById('loginOverlay').classList.add('show');
+      document.getElementById('loginRedirectBtn').onclick=()=>{ window.location.href = destino; };
+      setTimeout(()=>{ window.location.href = destino; }, 1500);
+    } else {
+      showAlert('alertLogin','❌ '+data.mensaje,'err');
+    }
+  } catch(e){
+    // Modo demo: si el backend no responde, redirigir por rol igual
+    const rolDemo = document.getElementById('l_rol').value;
+    const destinosDemo = {
+      'Voluntario':  'vista_voluntario.html',
+      'Admin':       'panel_admin.html',
+      'Director':    'vista_director.html',
+      'SuperAdmin':  'vista_superadmin.html'
+    };
+    if(rolDemo && destinosDemo[rolDemo]){
+      document.getElementById('loginMsg').innerHTML=`Modo demo — redirigiendo como <strong>${rolDemo}</strong>…`;
+      document.getElementById('loginOverlay').classList.add('show');
+      const dest = destinosDemo[rolDemo];
+      document.getElementById('loginRedirectBtn').onclick=()=>{ window.location.href = dest; };
+      setTimeout(()=>{ window.location.href = dest; }, 1500);
+    } else {
+      showAlert('alertLogin','⚠️ No se pudo conectar con el servidor. Verifica que service-auth esté corriendo en el puerto 8081.','err');
+    }
+  } finally {
+    btn.classList.remove('loading');
+  }
+}
+
+function showRecover(){
+  const email=document.getElementById('l_email').value.trim();
+  showAlert('alertLogin', email
+    ? '📧 Funcionalidad de recuperación pendiente de implementar. Contacta al administrador.'
+    : 'Ingresa tu correo electrónico primero.','err');
+}
+
+['l_email','l_pass'].forEach(id=>{
+  document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter') doLogin();});
+});
+</script>
+</body>
+</html>
