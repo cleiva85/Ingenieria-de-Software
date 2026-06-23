@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fundación Abrázame — Vista Voluntario</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--green:#8DC5A0;--green-dark:#6aaa85;--green-light:#EBF5EE;--lilac:#C4A8D4;--gray:#6B7280;--border:#E5E7EB;--text:#1E293B;
+      --pend:#FEF3C7;--pend-txt:#92400E;--prev:#DBEAFE;--prev-txt:#1E40AF;--apro:#D1FAE5;--apro-txt:#065F46;--rech:#FEE2E2;--rech-txt:#991B1B;--desc:#F3E8FF;--desc-txt:#6B21A8;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Nunito',sans-serif;background:#F3F4F6;min-height:100vh;}
+    nav{background:var(--green);padding:0 32px;display:flex;align-items:center;flex-wrap:wrap;}
+    nav a{color:rgba(255,255,255,0.85);font-size:0.82rem;font-weight:700;letter-spacing:0.06em;padding:14px 18px;display:block;text-transform:uppercase;text-decoration:none;}
+    nav a:hover,nav a.active{color:#fff;background:rgba(255,255,255,0.12);}nav a.active{background:var(--lilac);}
+    #welSpan{color:#fff;font-size:0.78rem;font-weight:700;padding:0 12px;margin-left:auto;}
+    .logout-btn{background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.4);color:#fff;font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:800;text-transform:uppercase;padding:8px 18px;border-radius:50px;cursor:pointer;}
+    .page-header{background:#fff;padding:20px 32px;display:flex;align-items:center;gap:16px;border-bottom:3px solid var(--green-light);}
+    .logo-wrap{width:52px;height:52px;background:var(--green-light);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;}
+    .page-header h1{font-size:1.1rem;font-weight:900;color:var(--text);}.page-header p{font-size:0.75rem;color:var(--gray);margin-top:2px;}
+    .content{max-width:1150px;margin:0 auto;padding:28px 20px 60px;}
+    .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px;}
+    .stat{background:#fff;border-radius:14px;padding:18px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+    .stat .num{font-size:1.8rem;font-weight:900;color:var(--green-dark);}
+    .stat .lbl{font-size:0.72rem;font-weight:800;color:var(--gray);text-transform:uppercase;letter-spacing:0.06em;margin-top:4px;}
+    .stat.prev .num{color:#1E40AF;}.stat.desc .num{color:#6B21A8;}.stat.apro .num{color:#065F46;}
+    .sec{background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,0.05);margin-bottom:24px;overflow:hidden;}
+    .sec-head{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--border);}
+    .sec-head h2{font-size:0.9rem;font-weight:900;color:var(--text);text-transform:uppercase;letter-spacing:0.06em;}
+    .si{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+    .si-pend{background:#FEF3C7;}.si-all{background:var(--green-light);}
+    table{width:100%;border-collapse:collapse;}
+    th{font-size:0.73rem;font-weight:800;color:var(--gray);text-transform:uppercase;letter-spacing:0.06em;padding:10px 14px;text-align:left;background:#F9FAFB;border-bottom:1px solid var(--border);}
+    td{padding:11px 14px;font-size:0.82rem;color:var(--text);border-bottom:1px solid #F3F4F6;}
+    tr:last-child td{border-bottom:none;}tr:hover td{background:#FAFBFC;}
+    .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:50px;font-size:0.71rem;font-weight:800;}
+    .badge-pend{background:var(--pend);color:var(--pend-txt);}.badge-prev{background:var(--prev);color:var(--prev-txt);}
+    .badge-apro{background:var(--apro);color:var(--apro-txt);}.badge-rech{background:var(--rech);color:var(--rech-txt);}.badge-desc{background:var(--desc);color:var(--desc-txt);}
+    .btn{padding:6px 14px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.73rem;font-weight:800;text-transform:uppercase;cursor:pointer;border:none;white-space:nowrap;}
+    .btn:hover{opacity:0.85;}.btn-prev{background:var(--prev);color:var(--prev-txt);}.btn-desc{background:var(--desc);color:var(--desc-txt);}.btn-ver{background:var(--green-light);color:var(--green-dark);}
+    .acciones{display:flex;gap:6px;flex-wrap:wrap;}
+    .empty{text-align:center;padding:32px;color:var(--gray);font-size:0.85rem;}
+    .filter-row{display:flex;gap:8px;padding:12px 16px;flex-wrap:wrap;background:#F9FAFB;border-bottom:1px solid var(--border);}
+    .filter-btn{padding:5px 14px;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.73rem;font-weight:800;text-transform:uppercase;cursor:pointer;border:2px solid var(--border);background:#fff;color:var(--gray);}
+    .filter-btn.active{background:var(--green);color:#fff;border-color:var(--green);}
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;padding:16px;}
+    .modal-overlay.show{display:flex;}
+    .modal{background:#fff;border-radius:16px;padding:28px;max-width:600px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.25);}
+    .modal h3{font-size:1rem;font-weight:900;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--green-light);}
+    .modal-info{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+    .mi{font-size:0.8rem;color:var(--gray);}.mi strong{color:var(--text);display:block;}
+    .media-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+    .media-box{border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+    .media-box img{width:100%;max-height:220px;object-fit:cover;display:block;}
+    .media-box video{width:100%;max-height:220px;display:block;}
+    .media-lbl{font-size:0.72rem;font-weight:800;color:var(--gray);text-transform:uppercase;padding:8px 12px;background:#F9FAFB;border-bottom:1px solid var(--border);}
+    .dl-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;font-family:'Nunito',sans-serif;font-size:0.78rem;font-weight:800;background:var(--green-light);color:var(--green-dark);border:none;width:100%;cursor:pointer;text-decoration:none;}
+    .no-media{background:#F9FAFB;border:1px dashed var(--border);border-radius:8px;padding:24px;text-align:center;color:var(--gray);font-size:0.8rem;margin-bottom:16px;}
+    .com-box{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:10px 14px;font-size:0.8rem;color:#166534;margin-bottom:16px;}
+    .com-box.desc{background:#FAF5FF;border-color:#E9D5FF;color:#6B21A8;}
+    .modal-close{width:100%;padding:11px;border:none;border-radius:50px;background:var(--green);color:#fff;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:800;cursor:pointer;}
+    .accion-modal{background:#fff;border-radius:16px;padding:28px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.25);}
+    .accion-modal h3{font-size:1rem;font-weight:900;margin-bottom:6px;color:var(--text);}
+    .accion-modal p{font-size:0.82rem;color:var(--gray);margin-bottom:16px;}
+    .accion-modal textarea{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Nunito',sans-serif;font-size:0.85rem;resize:vertical;min-height:90px;outline:none;}
+    .accion-modal textarea:focus{border-color:var(--green);}
+    .accion-btns{display:flex;gap:10px;margin-top:16px;}
+    .accion-btns button{flex:1;padding:11px;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:800;cursor:pointer;}
+    .btn-cp{background:var(--prev);color:var(--prev-txt);}.btn-cd{background:var(--desc);color:var(--desc-txt);}.btn-cancel{background:#F3F4F6;color:var(--gray);}
+    @media(max-width:700px){.stats{grid-template-columns:1fr 1fr 1fr;}th,td{padding:8px;font-size:0.75rem;}.media-grid,.modal-info{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div class="modal-overlay" id="mediaModal">
+  <div class="modal">
+    <h3 id="modalTitle">Evidencia</h3>
+    <div class="modal-info" id="modalInfo"></div>
+    <div id="modalMedia"></div>
+    <div id="modalCom"></div>
+    <button class="modal-close" onclick="closeModal('mediaModal')">Cerrar</button>
+  </div>
+</div>
+<div class="modal-overlay" id="accionModal">
+  <div class="accion-modal">
+    <h3 id="accionTitle"></h3>
+    <p id="accionSub"></p>
+    <textarea id="accionCom" rows="4"></textarea>
+    <div class="accion-btns">
+      <button class="btn-cancel" onclick="closeModal('accionModal')">Cancelar</button>
+      <button id="accionBtn"></button>
+    </div>
+  </div>
+</div>
+<nav>
+  <a href="catalogo.html">Catálogo</a>
+  <a href="mapa_entregas.html">Mapa entregas</a>
+  <a href="vista_voluntario.html" class="active">Panel Voluntario</a>
+  <span id="welSpan"></span>
+  <button class="logout-btn" onclick="cerrarSesion()">Cerrar sesión</button>
+</nav>
+<div class="page-header">
+  <div class="logo-wrap">🙌</div>
+  <div><h1>Panel del Voluntario</h1><p>Revisa, prevalida o descarta las donaciones recibidas</p></div>
+</div>
+<div class="content">
+  <div class="stats">
+    <div class="stat"><div class="num" id="sTot">0</div><div class="lbl">Total</div></div>
+    <div class="stat"><div class="num" id="sPend">0</div><div class="lbl">Pendientes</div></div>
+    <div class="stat prev"><div class="num" id="sPrev">0</div><div class="lbl">Prevalidadas</div></div>
+    <div class="stat desc"><div class="num" id="sDesc">0</div><div class="lbl">Descartadas</div></div>
+    <div class="stat apro"><div class="num" id="sApro">0</div><div class="lbl">Aprobadas</div></div>
+  </div>
+  <div class="sec">
+    <div class="sec-head"><div class="si si-pend">⏳</div><h2>Pendientes de revisión</h2></div>
+    <table>
+      <thead><tr><th>DON-ID</th><th>Donante</th><th>Artículo</th><th>Cant.</th><th>Fecha</th><th>Evidencia</th><th>Acciones</th></tr></thead>
+      <tbody id="tPend"><tr><td colspan="7" class="empty">Cargando…</td></tr></tbody>
+    </table>
+  </div>
+  <div class="sec">
+    <div class="sec-head"><div class="si si-all">📋</div><h2>Todas las donaciones</h2></div>
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="filtrar('todos',this)">Todos</button>
+      <button class="filter-btn" onclick="filtrar('Pendiente',this)">Pendientes</button>
+      <button class="filter-btn" onclick="filtrar('Prevalidado',this)">Prevalidadas</button>
+      <button class="filter-btn" onclick="filtrar('Descartado',this)">Descartadas</button>
+      <button class="filter-btn" onclick="filtrar('Aprobado',this)">Aprobadas</button>
+      <button class="filter-btn" onclick="filtrar('Rechazado',this)">Rechazadas</button>
+    </div>
+    <table>
+      <thead><tr><th>DON-ID</th><th>Donante</th><th>Artículo</th><th>Cant.</th><th>Estado</th><th>Comentario voluntario</th><th>Punto entrega</th><th>Fecha</th><th>Evidencia</th></tr></thead>
+      <tbody id="tTodas"><tr><td colspan="9" class="empty">Cargando…</td></tr></tbody>
+    </table>
+  </div>
+</div>
+<script>
+const API='';
+const _u=JSON.parse(sessionStorage.getItem('usuario')||'null');
+if(!_u){window.location.href='login_voluntario.html';}
+else{document.getElementById('welSpan').textContent=''+_u.nombre;}
+let todas=[],accionId=null,accionTipo=null;
+async function apiFetch(m,p,b){
+  const o={method:m,headers:{'Content-Type':'application/json'}};
+  if(b)o.body=JSON.stringify(b);
+  const r=await fetch(API+p,o);if(!r.ok)throw new Error(r.status);
+  const t=await r.text();return t?JSON.parse(t):null;
+}
+const badges={Pendiente:'<span class="badge badge-pend">Pendiente</span>',Prevalidado:'<span class="badge badge-prev">Prevalidado</span>',Aprobado:'<span class="badge badge-apro">Aprobado</span>',Rechazado:'<span class="badge badge-rech">Rechazado</span>',Descartado:'<span class="badge badge-desc">Descartado</span>'};
+function badge(e){return badges[e]||`<span class="badge">${e}</span>`;}
+function fmt(d){if(!d)return'—';try{return new Date(d).toLocaleDateString('es-CL');}catch{return d;}}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+function esc(d){return JSON.stringify(d).replace(/'/g,"&#39;");}
+function verEvidencia(d){
+  document.getElementById('modalTitle').textContent='Evidencia — '+d.donId;
+  document.getElementById('modalInfo').innerHTML=`<div class="mi"><strong>${d.nombreDonante||'—'}</strong>Donante</div><div class="mi"><strong>${d.articuloNombre||'—'}</strong>Artículo</div><div class="mi"><strong>${d.cantidad||'—'}</strong>Cantidad</div><div class="mi">${badge(d.estado)}</div>`;
+  const g='http://localhost:8083';
+  let media='';
+  if(d.urlImagen) media+=`<div class="media-box"><div class="media-lbl">Foto</div><img src="${g}${d.urlImagen}" onerror="this.style.display='none'"/><a class="dl-btn" href="${g}${d.urlImagen}" download>Descargar foto</a></div>`;
+  if(d.urlVideo) media+=`<div class="media-box"><div class="media-lbl">Video</div><video controls><source src="${g}${d.urlVideo}"/></video><a class="dl-btn" href="${g}${d.urlVideo}" download>Descargar video</a></div>`;
+  document.getElementById('modalMedia').innerHTML=media?`<div class="media-grid">${media}</div>`:'<div class="no-media">Sin fotos ni video adjunto.</div>';
+  const com=d.comentarioVoluntario;
+  document.getElementById('modalCom').innerHTML=com?`<div class="com-box ${d.estado==='Descartado'?'desc':''}"><strong>Comentario:</strong> ${com}</div>`:'';
+  document.getElementById('mediaModal').classList.add('show');
+}
+function abrirAccion(id,tipo){
+  accionId=id;accionTipo=tipo;
+  const prev=tipo==='prevalidar';
+  document.getElementById('accionTitle').textContent=prev?'Prevalidar donación':'Descartar donación';
+  document.getElementById('accionSub').textContent=prev?'Confirma que los artículos están en buen estado.':'Indica la razón por la que no puede aceptarse.';
+  document.getElementById('accionCom').placeholder=prev?'Ej: Artículos en buen estado...':'Ej: No corresponden a lo solicitado...';
+  document.getElementById('accionCom').value='';
+  const btn=document.getElementById('accionBtn');
+  btn.className=prev?'btn-cp':'btn-cd';
+  btn.textContent=prev?'Confirmar prevalidación':'Confirmar descarte';
+  btn.onclick=confirmarAccion;
+  document.getElementById('accionModal').classList.add('show');
+}
+async function confirmarAccion(){
+  const comentario=document.getElementById('accionCom').value.trim();
+  try{
+    await apiFetch('PATCH','/gestion/'+accionId+'/'+accionTipo,{comentario});
+    closeModal('accionModal');await cargar();
+  }catch(e){alert('Error al procesar. Verifica que service-gestion esté corriendo.');}
+}
+async function cargar(){
+  try{
+    const lista=await apiFetch('GET','/gestion');
+    todas=Array.isArray(lista)?lista:[];
+    document.getElementById('sTot').textContent=todas.length;
+    document.getElementById('sPend').textContent=todas.filter(d=>d.estado==='Pendiente').length;
+    document.getElementById('sPrev').textContent=todas.filter(d=>d.estado==='Prevalidado').length;
+    document.getElementById('sDesc').textContent=todas.filter(d=>d.estado==='Descartado').length;
+    document.getElementById('sApro').textContent=todas.filter(d=>d.estado==='Aprobado').length;
+    renderPend();renderTodas(todas);
+  }catch(e){
+    const err='<tr><td colspan="9" class="empty">No se pudo cargar. Verifica que los servicios estén corriendo.</td></tr>';
+    document.getElementById('tPend').innerHTML=err;document.getElementById('tTodas').innerHTML=err;
+  }
+}
+function renderPend(){
+  const p=todas.filter(d=>d.estado==='Pendiente');
+  document.getElementById('tPend').innerHTML=p.length?p.map(d=>`<tr>
+    <td><strong>${d.donId||'—'}</strong></td><td>${d.nombreDonante||'—'}</td><td>${d.articuloNombre||'—'}</td>
+    <td>${d.cantidad||'—'}</td><td>${fmt(d.fechaCreacion)}</td>
+    <td><button class="btn btn-ver" onclick='verEvidencia(${esc(d)})'>Ver</button></td>
+    <td><div class="acciones"><button class="btn btn-prev" onclick="abrirAccion(${d.id},'prevalidar')">Prevalidar</button><button class="btn btn-desc" onclick="abrirAccion(${d.id},'descartar')">Descartar</button></div></td>
+  </tr>`).join(''):'<tr><td colspan="7" class="empty">No hay donaciones pendientes 🎉</td></tr>';
+}
+function renderTodas(lista){
+  document.getElementById('tTodas').innerHTML=lista.length?lista.map(d=>`<tr>
+    <td><strong>${d.donId||'—'}</strong></td><td>${d.nombreDonante||'—'}</td><td>${d.articuloNombre||'—'}</td>
+    <td>${d.cantidad||'—'}</td><td>${badge(d.estado)}</td>
+    <td style="max-width:160px;font-size:0.75rem;color:var(--gray);">${d.comentarioVoluntario||'<span style="color:#ccc">—</span>'}</td>
+    <td>${d.puntoEntrega||'<span style="color:#ccc;font-size:0.75rem;">Sin asignar</span>'}</td>
+    <td>${fmt(d.fechaEntrega||d.fechaCreacion)}</td>
+    <td><button class="btn btn-ver" onclick='verEvidencia(${esc(d)})'>Ver</button></td>
+  </tr>`).join(''):'<tr><td colspan="9" class="empty">Sin donaciones en este estado.</td></tr>';
+}
+function filtrar(e,btn){document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTodas(e==='todos'?todas:todas.filter(d=>d.estado===e));}
+function cerrarSesion(){sessionStorage.removeItem('usuario');window.location.href='login_voluntario.html';}
+cargar();
+</script>
+</body>
+</html>

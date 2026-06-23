@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Abrázame — Panel Administrador</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--green:#8DC5A0;--green-dark:#6aaa85;--green-light:#EBF5EE;--lilac:#C4A8D4;--lilac-dark:#a888be;
+      --white:#fff;--gray:#6B7280;--border:#E5E7EB;--text:#1E293B;--radius:10px;
+      --pend-bg:#FEF3C7;--pend-txt:#92400E;--apro-bg:#D1FAE5;--apro-txt:#065F46;
+      --rech-bg:#FEE2E2;--rech-txt:#991B1B;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Nunito',sans-serif;background:#F3F4F6;min-height:100vh;}
+    /* TOPBAR */
+    .topbar{background:var(--green-dark);display:flex;align-items:center;gap:14px;padding:0 28px;height:56px;}
+    .topbar-logo{display:flex;align-items:center;gap:10px;}
+    .topbar-logo svg{width:34px;height:34px;}
+    .topbar-logo span{color:#fff;font-weight:900;font-size:1rem;}
+    .topbar-badge{background:rgba(255,255,255,.2);color:#fff;font-size:.7rem;font-weight:800;padding:3px 12px;border-radius:50px;letter-spacing:.07em;}
+    .topbar-user{margin-left:auto;color:rgba(255,255,255,.85);font-size:.78rem;}
+    .btn-logout{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);color:#fff;font-family:'Nunito',sans-serif;font-size:.75rem;font-weight:800;padding:6px 16px;border-radius:50px;cursor:pointer;margin-left:12px;}
+    .btn-logout:hover{background:rgba(255,255,255,.22);}
+    /* CONTENT */
+    .content{max-width:1100px;margin:0 auto;padding:24px 16px 60px;}
+    .page-title{font-size:1.3rem;font-weight:900;color:var(--text);margin-bottom:4px;}
+    .page-sub{font-size:.82rem;color:var(--gray);margin-bottom:24px;}
+    /* STATS */
+    .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px;}
+    .stat{background:#fff;border-radius:12px;padding:18px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+    .stat .num{font-size:1.8rem;font-weight:900;color:var(--green-dark);}
+    .stat .lbl{font-size:.72rem;font-weight:800;color:var(--gray);text-transform:uppercase;margin-top:4px;}
+    /* FILTROS */
+    .toolbar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+    .filter-btn{padding:7px 18px;border-radius:50px;border:2px solid var(--border);background:#fff;font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:800;cursor:pointer;transition:all .2s;color:var(--gray);}
+    .filter-btn.active,.filter-btn:hover{background:var(--green-dark);color:#fff;border-color:var(--green-dark);}
+    .search-inp{flex:1;min-width:200px;padding:9px 14px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Nunito',sans-serif;font-size:.85rem;outline:none;}
+    .search-inp:focus{border-color:var(--green-dark);}
+    /* TABLE */
+    .table-wrap{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:24px;}
+    .table-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);}
+    .table-head h2{font-size:.9rem;font-weight:900;color:var(--text);text-transform:uppercase;letter-spacing:.05em;}
+    table{width:100%;border-collapse:collapse;}
+    th{font-size:.72rem;font-weight:800;color:var(--gray);text-transform:uppercase;padding:10px 16px;text-align:left;background:#F9FAFB;border-bottom:1px solid var(--border);}
+    td{padding:12px 16px;font-size:.83rem;color:var(--text);border-bottom:1px solid #F3F4F6;vertical-align:middle;}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:#f8fffe;}
+    .badge{display:inline-block;padding:3px 10px;border-radius:50px;font-size:.72rem;font-weight:800;}
+    .badge-pend{background:var(--pend-bg);color:var(--pend-txt);}
+    .badge-apro{background:var(--apro-bg);color:var(--apro-txt);}
+    .badge-rech{background:var(--rech-bg);color:var(--rech-txt);}
+    .badge-desc{background:#F3F4F6;color:#374151;}
+    /* BTNS */
+    .btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:.75rem;font-weight:800;cursor:pointer;transition:all .15s;}
+    .btn-ver{background:var(--green-light);color:var(--green-dark);}   .btn-ver:hover{background:var(--green);}
+    .btn-apro{background:var(--apro-bg);color:var(--apro-txt);}        .btn-apro:hover{background:#6EE7B7;}
+    .btn-rech{background:var(--rech-bg);color:var(--rech-txt);}        .btn-rech:hover{background:#FECACA;}
+    .btn-del{background:#FEE2E2;color:#991B1B;}                        .btn-del:hover{background:#FCA5A5;}
+    .acciones{display:flex;gap:6px;flex-wrap:wrap;}
+    /* MODAL */
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;}
+    .overlay.open{display:flex;}
+    .modal{background:#fff;border-radius:18px;padding:32px;max-width:580px;width:95%;position:relative;}
+    .modal h3{font-size:1.1rem;font-weight:900;color:var(--text);margin-bottom:16px;}
+    .modal p{font-size:.88rem;color:var(--gray);margin-bottom:10px;line-height:1.6;}
+    .modal-row{display:flex;gap:10px;margin-top:20px;}
+    .modal-close{position:absolute;top:14px;right:14px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:#aaa;}
+    textarea{width:100%;min-height:80px;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Nunito',sans-serif;font-size:.85rem;resize:vertical;outline:none;}
+    textarea:focus{border-color:var(--green-dark);}
+    .toast{display:none;position:fixed;bottom:28px;right:28px;background:var(--green-dark);color:#fff;padding:12px 22px;border-radius:10px;font-weight:700;font-size:.85rem;z-index:999;box-shadow:0 4px 16px rgba(0,0,0,.2);}
+    .toast.show{display:block;animation:fi .3s;}
+    @keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .tab-btn{padding:9px 20px;border-radius:50px;border:2px solid var(--border);background:#fff;font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:800;cursor:pointer;color:var(--gray);transition:all .2s;}
+    .tab-btn.active,.tab-btn:hover{background:var(--green-dark);color:#fff;border-color:var(--green-dark);}
+    .tab-panel{display:none;}.tab-panel.active{display:block;}
+    .prio-alta{background:#FEE2E2;color:#991B1B;}.prio-media{background:#FEF3C7;color:#92400E;}.prio-baja{background:#D1FAE5;color:#065F46;}
+    .bar-mini{height:8px;background:#e5e7eb;border-radius:50px;overflow:hidden;min-width:80px;}
+    .bar-mini-fill{height:100%;border-radius:50px;background:var(--green-dark);}
+  </style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+      <path d="M50 18 A34 34 0 0 1 84 68" stroke="#8DC5A0" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <path d="M16 68 A34 34 0 0 1 50 18" stroke="#E8A0B0" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <path d="M84 68 A34 34 0 0 1 16 68" stroke="#C4A8D4" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <circle cx="50" cy="14" r="7" fill="#8DC5A0"/>
+      <circle cx="13" cy="70" r="7" fill="#E8A0B0"/>
+      <circle cx="87" cy="70" r="7" fill="#C4A8D4"/>
+      <circle cx="50" cy="46" r="10" fill="#fff"/>
+      <path d="M45 50 Q50 55 55 50" stroke="#6B7CA4" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>
+    <span>Abrázame</span>
+  </div>
+  <span class="topbar-badge">👩‍💼 ADMINISTRADOR</span>
+  <span class="topbar-user" id="topbar-user">Bienvenido/a</span>
+  <button class="btn-logout" onclick="window.location.href='login_usuario.html'">Cerrar sesión</button>
+</div>
+
+<div class="content">
+  <p class="page-title">Panel de Administración</p>
+  <p class="page-sub">Gestiona todas las donaciones: visualizar, aprobar, rechazar y eliminar.</p>
+
+  <!-- TABS NAV (missing before) -->
+  <div style="display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;">
+    <button class="tab-btn active" id="btn-donaciones" onclick="setTab('donaciones',this)">📋 Donaciones</button>
+    <button class="tab-btn" id="btn-voluntarios" onclick="setTab('voluntarios',this)">🙋 Voluntarios</button>
+    <button class="tab-btn" id="btn-catalogo" onclick="setTab('catalogo',this)">📦 Inventario</button>
+    <button class="tab-btn" id="btn-trazabilidad" onclick="setTab('trazabilidad',this)">🔍 Trazabilidad</button>
+  </div>
+
+  <div class="tab-panel active" id="tab-donaciones-wrap" style="display:block;">
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat"><div class="num" id="s-total">—</div><div class="lbl">Total</div></div>
+    <div class="stat"><div class="num" id="s-pend" style="color:#92400E;">—</div><div class="lbl">Pendientes</div></div>
+    <div class="stat"><div class="num" id="s-recib" style="color:#1D4ED8;">—</div><div class="lbl">Recibidas</div></div>
+    <div class="stat"><div class="num" id="s-apro" style="color:#065F46;">—</div><div class="lbl">Aprobadas</div></div>
+    <div class="stat"><div class="num" id="s-rech" style="color:#991B1B;">—</div><div class="lbl">Rechazadas</div></div>
+  </div>
+
+  <!-- TABLA DONACIONES -->
+  <div class="table-wrap">
+    <div class="table-head">
+      <h2>📋 Donaciones</h2>
+    </div>
+    <div style="padding:14px 20px;border-bottom:1px solid var(--border);">
+      <div class="toolbar">
+        <button class="filter-btn active" onclick="filtrar('todos',this)">Todos</button>
+        <button class="filter-btn" onclick="filtrar('Pendiente',this)">⏳ Pendiente</button>
+        <button class="filter-btn" onclick="filtrar('Recibida',this)">📥 Recibida</button>
+        <button class="filter-btn" onclick="filtrar('Aprobado',this)">✅ Aprobado</button>
+        <button class="filter-btn" onclick="filtrar('Rechazado',this)">❌ Rechazado</button>
+        <input class="search-inp" id="busqueda" placeholder="Buscar por nombre, artículo o código…" oninput="buscar()">
+      </div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th><th>Donante</th><th>Artículo</th><th>Cant.</th>
+          <th>Estado</th><th>Recibida</th><th>Fecha</th><th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-body">
+        <tr><td colspan="7" style="text-align:center;padding:28px;color:var(--gray);">Cargando donaciones…</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL VER DETALLE -->
+<div class="overlay" id="modalVer">
+  <div class="modal">
+    <button class="modal-close" onclick="cerrarModal('modalVer')">✕</button>
+    <h3>📄 Detalle de Donación</h3>
+    <div id="detalle-content"></div>
+    <div class="modal-row">
+      <button class="btn btn-apro" onclick="aprobarDesdeModal()">✅ Aprobar</button>
+      <button class="btn btn-rech" onclick="abrirRechazar()">❌ Rechazar</button>
+      <button class="btn btn-del" onclick="eliminarDesdeModal()">🗑️ Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RECHAZAR -->
+<div class="overlay" id="modalRech">
+  <div class="modal">
+    <button class="modal-close" onclick="cerrarModal('modalRech')">✕</button>
+    <h3>❌ Rechazar Donación</h3>
+    <p>Ingresa el motivo del rechazo (se notificará al donante por correo):</p>
+    <textarea id="razon-rechazo" placeholder="Ej: El artículo no es requerido actualmente…"></textarea>
+    <div class="modal-row">
+      <button class="btn btn-rech" style="flex:1" onclick="confirmarRechazo()">Confirmar Rechazo</button>
+      <button class="btn" style="background:#F3F4F6;color:var(--gray);flex:1" onclick="cerrarModal('modalRech')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+  </div><!-- /tabla donaciones -->
+  </div><!-- /tab-donaciones-wrap -->
+
+  <!-- PANEL VOLUNTARIOS PENDIENTES -->
+  <div class="tab-panel" id="tab-voluntarios" style="display:none;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+      <div>
+        <span style="font-size:.9rem;font-weight:900;color:var(--text);">🙋 Solicitudes pendientes</span>
+        <span id="badge-pendientes" style="background:var(--pend-bg);color:var(--pend-txt);font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:50px;margin-left:8px;">—</span>
+      </div>
+      <button onclick="cargarVoluntarios()" style="padding:7px 18px;border-radius:50px;border:2px solid var(--green);background:var(--green-light);color:var(--green-dark);font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:800;cursor:pointer;">🔄 Actualizar</button>
+    </div>
+    <!-- Tarjetas de solicitud pendiente -->
+    <div id="vol-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;margin-bottom:20px;"></div>
+    <!-- Tabla completa -->
+    <div class="table-wrap">
+      <div class="table-head"><h2>🙋 Todos los Voluntarios Registrados</h2></div>
+      <table>
+        <thead><tr><th>Nombre</th><th>Correo</th><th>RUT</th><th>Teléfono</th><th>Días Disp.</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody id="tb-voluntarios"><tr><td colspan="7" style="text-align:center;padding:24px;color:var(--gray);">Cargando…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PANEL CATALOGO / INVENTARIO -->
+  <div class="tab-panel" id="tab-catalogo" style="display:none;">
+    <div class="toolbar" style="margin-bottom:14px;">
+      <button class="filter-btn active" onclick="filtrarCat('todos',this)">Todos</button>
+      <button class="filter-btn" onclick="filtrarCat('ALTA',this)">🔴 Prioridad Alta</button>
+      <button class="filter-btn" onclick="filtrarCat('MEDIA',this)">🟠 Prioridad Media</button>
+      <button class="filter-btn" onclick="filtrarCat('BAJA',this)">🟢 Prioridad Baja</button>
+    </div>
+    <div class="table-wrap">
+      <div class="table-head"><h2>📦 Catálogo — Inventario Actual</h2></div>
+      <table>
+        <thead><tr><th>ID</th><th>Artículo</th><th>Categoría</th><th>Prioridad</th><th>Stock Actual</th><th>Meta Stock</th><th>Estado</th></tr></thead>
+        <tbody id="tb-catalogo"><tr><td colspan="7" style="text-align:center;padding:24px;color:var(--gray);">Cargando…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PANEL TRAZABILIDAD -->
+  <div class="tab-panel" id="tab-trazabilidad" style="display:none;">
+    <div class="table-wrap">
+      <div class="table-head"><h2>🔍 Trazabilidad — Cantidades donadas por artículo</h2></div>
+      <table>
+        <thead><tr><th>Artículo</th><th>Total Donado</th><th>Aprobado</th><th>Pendiente</th><th>Rechazado</th><th>% Completado</th></tr></thead>
+        <tbody id="tb-trazabilidad"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--gray);">Cargando…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_GESTION = 'http://localhost:9090/gestion';
+let donaciones = [];
+let filtroActivo = 'todos';
+let donacionActual = null;
+
+function logoSVG(){
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width:28px;height:28px;vertical-align:middle;margin-right:6px;">
+    <path d="M50 18 A34 34 0 0 1 84 68" stroke="#8DC5A0" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M16 68 A34 34 0 0 1 50 18" stroke="#E8A0B0" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M84 68 A34 34 0 0 1 16 68" stroke="#C4A8D4" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <circle cx="50" cy="14" r="7" fill="#8DC5A0"/>
+    <circle cx="13" cy="70" r="7" fill="#E8A0B0"/>
+    <circle cx="87" cy="70" r="7" fill="#C4A8D4"/>
+    <circle cx="50" cy="46" r="10" fill="#6B7CA4"/>
+    <path d="M45 50 Q50 55 55 50" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </svg>`;
+}
+
+async function cargarDonaciones(){
+  try{
+    const res = await fetch(API_GESTION);
+    donaciones = await res.json();
+  } catch(e){
+    // Demo data si el backend no responde
+    donaciones = [
+      {id:1,donId:'DON-001',nombreDonante:'María González',articuloNombre:'Pañales Talla M',cantidad:10,estado:'Pendiente',fechaCreacion:'2024-06-01',emailDonante:'maria@test.cl'},
+      {id:2,donId:'DON-002',nombreDonante:'Empresa SA',articuloNombre:'Libros Infantiles',cantidad:25,estado:'Aprobado',fechaCreacion:'2024-06-02',emailDonante:'empresa@test.cl'},
+      {id:3,donId:'DON-003',nombreDonante:'Juan Pérez',articuloNombre:'Ropa Talla 2-4',cantidad:8,estado:'Rechazado',fechaCreacion:'2024-06-03',emailDonante:'juan@test.cl'},
+      {id:4,donId:'DON-004',nombreDonante:'Ana López',articuloNombre:'Juguetes Didácticos',cantidad:5,estado:'Pendiente',fechaCreacion:'2024-06-04',emailDonante:'ana@test.cl'},
+      {id:5,donId:'DON-005',nombreDonante:'Pedro Soto',articuloNombre:'Leche en Polvo',cantidad:15,estado:'Aprobado',fechaCreacion:'2024-06-05',emailDonante:'pedro@test.cl'},
+    ];
+  }
+  actualizarStats();
+  renderTabla();
+}
+
+function actualizarStats(){
+  document.getElementById('s-total').textContent = donaciones.length;
+  document.getElementById('s-pend').textContent  = donaciones.filter(d=>d.estado==='Pendiente').length;
+  document.getElementById('s-recib').textContent = donaciones.filter(d=>d.recibida===true||d.recibida==='true').length;
+  document.getElementById('s-apro').textContent  = donaciones.filter(d=>d.estado==='Aprobado').length;
+  document.getElementById('s-rech').textContent  = donaciones.filter(d=>d.estado==='Rechazado').length;
+}
+
+function badgeEstado(e){
+  const m={Pendiente:'badge-pend',Aprobado:'badge-apro',Rechazado:'badge-rech'};
+  return `<span class="badge ${m[e]||'badge-desc'}">${e}</span>`;
+}
+
+function filtrar(estado, btn){
+  filtroActivo = estado;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTabla();
+}
+
+function buscar(){
+  renderTabla();
+}
+
+function renderTabla(){
+  const q = document.getElementById('busqueda').value.toLowerCase();
+  let data = filtroActivo==='todos' ? donaciones : donaciones.filter(d=>d.estado===filtroActivo);
+  if(q) data = data.filter(d=>(d.nombreDonante||'').toLowerCase().includes(q)||(d.articuloNombre||'').toLowerCase().includes(q)||(d.donId||'').toLowerCase().includes(q));
+  const tbody = document.getElementById('tabla-body');
+  if(!data.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--gray);">No hay donaciones con estos criterios.</td></tr>';return;}
+  tbody.innerHTML = data.map(d=>{
+    const recibida = d.recibida===true||d.recibida==='true';
+    const checkHtml = `<label style="display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;">
+      <input type="checkbox" ${recibida?'checked':''} onchange="marcarRecibida(${d.id},this.checked)"
+        style="width:17px;height:17px;accent-color:#1D4ED8;cursor:pointer;">
+      <span style="font-size:.72rem;font-weight:800;color:${recibida?'#1D4ED8':'#9CA3AF'};">${recibida?'Sí':'—'}</span>
+    </label>`;
+    return `<tr>
+      <td><strong>${d.donId||'—'}</strong></td>
+      <td>${d.nombreDonante||'—'}</td>
+      <td>${d.articuloNombre||'—'}</td>
+      <td><strong>${d.cantidad||0}</strong></td>
+      <td>${badgeEstado(d.estado)}</td>
+      <td>${checkHtml}</td>
+      <td>${(d.fechaCreacion||'').split('T')[0]||'—'}</td>
+      <td>
+        <div class="acciones">
+          <button class="btn btn-ver" onclick="verDetalle(${d.id})">👁 Ver</button>
+          ${d.estado==='Pendiente'?`<button class="btn btn-apro" onclick="aprobar(${d.id})">✅</button>`:''}
+          ${d.estado==='Pendiente'?`<button class="btn btn-rech" onclick="rechazar(${d.id})">❌</button>`:''}
+          <button class="btn btn-del" onclick="eliminar(${d.id})">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function verDetalle(id){
+  donacionActual = donaciones.find(d=>d.id===id);
+  if(!donacionActual) return;
+  const d = donacionActual;
+
+  // Build media section
+  let mediaSec = '';
+  const API_BASE = 'http://localhost:9090';
+
+  if(d.urlImagen){
+    const imgSrc = d.urlImagen.startsWith('http') ? d.urlImagen : API_BASE + d.urlImagen;
+    mediaSec += `
+      <div style="margin-top:14px;">
+        <p style="font-size:.78rem;font-weight:800;color:var(--gray);margin-bottom:6px;">📷 EVIDENCIA FOTOGRÁFICA</p>
+        <img src="${imgSrc}" alt="Evidencia" style="max-width:100%;border-radius:10px;border:1px solid #e5e7eb;margin-bottom:8px;"
+             onerror="this.style.display='none';this.nextSibling.style.display='flex'">
+        <div style="display:none;align-items:center;gap:8px;padding:10px 14px;background:#f9fafb;border-radius:8px;">
+          <span style="font-size:.85rem;color:var(--gray);">🖼 ${d.urlImagen.split('/').pop()}</span>
+          <a href="${imgSrc}" download target="_blank" class="btn btn-ver" style="font-size:.75rem;padding:5px 12px;">⬇ Descargar</a>
+        </div>
+        <a href="${imgSrc}" download target="_blank" class="btn btn-ver" style="font-size:.75rem;padding:6px 14px;display:inline-flex;gap:5px;">⬇ Descargar imagen</a>
+      </div>`;
+  }
+
+  if(d.urlVideo){
+    const vidSrc = d.urlVideo.startsWith('http') ? d.urlVideo : API_BASE + d.urlVideo;
+    mediaSec += `
+      <div style="margin-top:14px;">
+        <p style="font-size:.78rem;font-weight:800;color:var(--gray);margin-bottom:6px;">🎥 EVIDENCIA EN VIDEO</p>
+        <video controls style="max-width:100%;border-radius:10px;border:1px solid #e5e7eb;margin-bottom:8px;"
+               onerror="this.style.display='none'">
+          <source src="${vidSrc}">
+        </video>
+        <br>
+        <a href="${vidSrc}" download target="_blank" class="btn btn-ver" style="font-size:.75rem;padding:6px 14px;display:inline-flex;gap:5px;">⬇ Descargar video</a>
+      </div>`;
+  }
+
+  if(!d.urlImagen && !d.urlVideo){
+    mediaSec = '<p style="font-size:.82rem;color:#9CA3AF;margin-top:12px;">Sin evidencia adjunta.</p>';
+  }
+
+  document.getElementById('detalle-content').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;font-size:.85rem;margin-bottom:4px;">
+      <p><strong>Código:</strong> ${d.donId||'—'}</p>
+      <p><strong>Estado:</strong> ${badgeEstado(d.estado)}</p>
+      <p><strong>Donante:</strong> ${d.nombreDonante||'—'}</p>
+      <p><strong>Email:</strong> ${d.emailDonante||'—'}</p>
+      <p><strong>Artículo:</strong> ${d.articuloNombre||'—'}</p>
+      <p><strong>Cantidad:</strong> ${d.cantidad||0}</p>
+      <p><strong>Fecha:</strong> ${(d.fechaCreacion||'').split('T')[0]||'—'}</p>
+      <p><strong>Entrega:</strong> ${d.puntoEntrega||'Sin asignar'}</p>
+    </div>
+    ${d.comentario?`<p style="font-size:.85rem;margin-top:4px;"><strong>Comentario:</strong> ${d.comentario}</p>`:''}
+    <hr style="border:none;border-top:1px solid #e5e7eb;margin:12px 0;">
+    ${mediaSec}
+  `;
+  document.getElementById('modalVer').classList.add('open');
+}
+
+function aprobarDesdeModal(){ if(donacionActual) aprobar(donacionActual.id); cerrarModal('modalVer'); }
+function eliminarDesdeModal(){ if(donacionActual) eliminar(donacionActual.id); cerrarModal('modalVer'); }
+function abrirRechazar(){ cerrarModal('modalVer'); document.getElementById('modalRech').classList.add('open'); }
+
+async function aprobar(id){
+  try{
+    await fetch(`${API_GESTION}/${id}/aprobar`,{method:'PUT'});
+  } catch(e){}
+  const d = donaciones.find(x=>x.id===id);
+  if(d){ d.estado='Aprobado'; actualizarStats(); renderTabla(); }
+  toast('✅ Donación aprobada y notificación enviada al donante.');
+}
+
+async function rechazar(id){
+  donacionActual = donaciones.find(d=>d.id===id);
+  document.getElementById('modalRech').classList.add('open');
+}
+
+async function confirmarRechazo(){
+  if(!donacionActual) return;
+  const razon = document.getElementById('razon-rechazo').value.trim();
+  try{
+    await fetch(`${API_GESTION}/${donacionActual.id}/rechazar`,{
+      method:'PUT', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({razon})
+    });
+  } catch(e){}
+  donacionActual.estado = 'Rechazado';
+  actualizarStats(); renderTabla(); cerrarModal('modalRech');
+  toast('❌ Donación rechazada y notificación enviada al donante.');
+}
+
+async function eliminar(id){
+  if(!confirm('¿Seguro que deseas eliminar esta donación? Esta acción no se puede deshacer.')) return;
+  try{
+    await fetch(`${API_GESTION}/${id}`,{method:'DELETE'});
+  } catch(e){}
+  donaciones = donaciones.filter(d=>d.id!==id);
+  actualizarStats(); renderTabla();
+  toast('🗑 Donación eliminada correctamente.');
+}
+
+function cerrarModal(id){ document.getElementById(id).classList.remove('open'); }
+
+async function marcarRecibida(id, checked){
+  // Actualiza localmente de inmediato
+  const d = donaciones.find(x=>x.id===id);
+  if(d) d.recibida = checked;
+  actualizarStats();
+  // Persiste en backend: PUT /gestion/{id} con campo recibida
+  try{
+    await fetch(`${API_GESTION}/${id}`,{
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({recibida: checked})
+    });
+    toast(checked ? '📥 Donación marcada como Recibida.' : '📋 Donación desmarcada como Recibida.');
+  } catch(e){
+    toast('⚠️ No se pudo guardar el estado en el servidor.');
+    // Revertir si falla
+    if(d) d.recibida = !checked;
+    actualizarStats();
+    renderTabla();
+  }
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+cargarDonaciones();
+cargarVoluntarios();
+cargarCatalogo();
+
+function setTab(id, btn){
+  // hide all panels
+  ['tab-donaciones-wrap','tab-voluntarios','tab-catalogo','tab-trazabilidad'].forEach(pid=>{
+    const el = document.getElementById(pid);
+    if(el){ el.classList.remove('active'); el.style.display='none'; }
+  });
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  // show selected
+  const panelId = id === 'donaciones' ? 'tab-donaciones-wrap' : 'tab-'+id;
+  const panel = document.getElementById(panelId);
+  if(panel){ panel.classList.add('active'); panel.style.display='block'; }
+  btn.classList.add('active');
+  // reload data for that tab
+  if(id==='voluntarios') cargarVoluntarios();
+  if(id==='catalogo') cargarCatalogo();
+  if(id==='trazabilidad'){ cargarCatalogo(); }
+}
+
+// ── VOLUNTARIOS PENDIENTES ──
+async function cargarVoluntarios(){
+  let pendientes = [];
+  let activos = [];
+  try{
+    const [resPend, resActiv] = await Promise.all([
+      fetch('http://localhost:9090/auth/voluntarios/pendientes'),
+      fetch('http://localhost:9090/auth/voluntarios/activos')
+    ]);
+    pendientes = resPend.ok ? await resPend.json() : [];
+    activos    = resActiv.ok ? await resActiv.json() : [];
+  } catch(e){
+    console.error('Error cargando voluntarios desde service-auth:', e);
+  }
+  pendientes.forEach(v => v.activo = false);
+  activos.forEach(v => v.activo = true);
+  const todosVols = [...pendientes, ...activos];
+
+  // ── Tarjetas estilo imagen 5 para pendientes ──
+  const cardsEl = document.getElementById('vol-cards');
+  // Actualizar badge contador
+  const badge = document.getElementById('badge-pendientes');
+  if(badge) badge.textContent = pendientes.length > 0 ? pendientes.length + ' pendiente(s)' : 'ninguno';
+  // Mostrar diagnóstico en consola
+  console.log('[Voluntarios] pendientes:', pendientes.length, pendientes);
+  console.log('[Voluntarios] activos:', activos.length, activos);
+  if(pendientes.length){
+    cardsEl.innerHTML = pendientes.map(v=>{
+      const nombre = v.nombre || 'Voluntario';
+      const correo = v.email || '—';
+      const rut    = v.rut   || 'Sin RUT';
+      return `<div style="background:#fff;border-radius:14px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.08);border-left:4px solid var(--green);">
+        <h3 style="font-size:1.1rem;font-weight:900;color:var(--text);margin-bottom:12px;">¡Hola, ${nombre}!</h3>
+        <p style="font-size:.87rem;color:#374151;line-height:1.6;margin-bottom:10px;">
+          Tu solicitud para ser voluntario/a de la Fundación Abrázame ha sido recibida correctamente.
+        </p>
+        <p style="font-size:.87rem;color:#374151;line-height:1.6;margin-bottom:14px;">
+          Nuestro equipo administrativo revisará tu información y te notificaremos por este medio cuando tu cuenta sea activada.
+        </p>
+        <div style="background:var(--green-light);border-left:4px solid var(--green);border-radius:8px;padding:10px 14px;margin-bottom:16px;">
+          <span style="font-size:.85rem;font-weight:700;color:var(--green-dark);">⏳ Estado: Solicitud pendiente de revisión</span>
+        </div>
+        <p style="font-size:.75rem;color:#9CA3AF;">Si no solicitaste ser voluntario/a, puedes ignorar este mensaje.</p>
+        <div style="display:flex;gap:8px;margin-top:14px;">
+          <button class="btn btn-apro" style="flex:1;" onclick="aprobarVol(${v.id},'${nombre}')">✅ Aprobar</button>
+          <button class="btn btn-rech" style="flex:1;" onclick="rechazarVol(${v.id})">❌ Rechazar</button>
+        </div>
+        <div style="margin-top:8px;font-size:.75rem;color:#6B7280;">
+          📧 ${correo} · 📋 ${rut}
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    cardsEl.innerHTML = '<div style="background:#f0fdf4;border-radius:12px;padding:20px;text-align:center;color:var(--green-dark);font-weight:700;margin-bottom:16px;">✅ No hay solicitudes pendientes de aprobación.</div>';
+  }
+
+  // ── Tabla completa de todos ──
+  const t = document.getElementById('tb-voluntarios');
+  if(!todosVols.length){t.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--gray);">No hay voluntarios registrados.</td></tr>';return;}
+  t.innerHTML = todosVols.map(v=>{
+    const nombre = v.nombre||'—';
+    const correo = v.email||'—';
+    const activo = v.activo !== undefined ? v.activo : true;
+    return `<tr>
+      <td><strong>${nombre}</strong></td>
+      <td>${correo}</td>
+      <td>${v.rut||'—'}</td>
+      <td>${v.telefono||'—'}</td>
+      <td>—</td>
+      <td>${activo ? '<span class="badge badge-apro">Activo</span>' : '<span class="badge badge-pend">Pendiente</span>'}</td>
+      <td><div class="acciones">
+        ${!activo ? `<button class="btn btn-apro" onclick="aprobarVol(${v.id},'${nombre}')">✅ Aprobar</button>` : ''}
+        ${!activo ? `<button class="btn btn-rech" onclick="rechazarVol(${v.id})">❌ Rechazar</button>` : ''}
+        ${activo ? '<span style="font-size:.78rem;color:var(--gray);">Ya aprobado</span>' : ''}
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+async function aprobarVol(id, nombre){
+  // Deshabilitar botones para evitar doble clic
+  document.querySelectorAll(`button[onclick*="aprobarVol(${id}"]`).forEach(b=>{b.disabled=true;b.textContent='⏳';});
+  try{
+    const res = await fetch(`http://localhost:9090/auth/voluntarios/${id}/aprobar`,{method:'PUT'});
+    const data = await res.json().catch(()=>({}));
+    if(res.ok && data.success !== false){
+      toast(`✅ ${nombre||'Voluntario'} aprobado. Correo de activación enviado.`);
+      // Esperar 800ms para que la DB se actualice antes de recargar
+      setTimeout(()=>cargarVoluntarios(), 800);
+    } else {
+      const msg = data.message || ('Error ' + res.status);
+      toast(`⚠️ ${msg}`);
+      cargarVoluntarios();
+    }
+  }catch(e){
+    toast('⚠️ No se pudo conectar con service-auth. Verifica que esté corriendo.');
+    console.error(e);
+    cargarVoluntarios();
+  }
+}
+async function rechazarVol(id){
+  if(!confirm('¿Rechazar este voluntario? Se eliminará su solicitud y recibirá un correo.')) return;
+  document.querySelectorAll(`button[onclick*="rechazarVol(${id}"]`).forEach(b=>{b.disabled=true;b.textContent='⏳';});
+  try{
+    const res = await fetch(`http://localhost:9090/auth/voluntarios/${id}/rechazar`,{method:'PUT'});
+    const data = await res.json().catch(()=>({}));
+    if(res.ok && data.success !== false){
+      toast('❌ Voluntario rechazado. Notificación enviada al correo.');
+      setTimeout(()=>cargarVoluntarios(), 800);
+    } else {
+      toast(`⚠️ Error al rechazar: ${data.message || res.status}`);
+      cargarVoluntarios();
+    }
+  }catch(e){
+    toast('⚠️ No se pudo conectar con service-auth. Verifica que esté corriendo.');
+    console.error(e);
+    cargarVoluntarios();
+  }
+  cargarVoluntarios();
+}
+
+// ── CATÁLOGO / INVENTARIO ──
+let catalogoData = [];
+let filtroCat = 'todos';
+async function cargarCatalogo(){
+  try{
+    const res = await fetch('http://localhost:9090/catalogo');
+    catalogoData = await res.json();
+  } catch(e){
+    catalogoData = [
+      {id:1,nombre:'Pañales Talla M',categoria:'Bebés',prioridad:'ALTA',stockActual:42,metaStock:100,activo:true},
+      {id:2,nombre:'Libros Infantiles',categoria:'Educación',prioridad:'MEDIA',stockActual:38,metaStock:60,activo:true},
+      {id:3,nombre:'Juguetes Didácticos',categoria:'Juegos',prioridad:'MEDIA',stockActual:15,metaStock:40,activo:true},
+      {id:4,nombre:'Ropa Talla 2-4',categoria:'Ropa',prioridad:'ALTA',stockActual:20,metaStock:80,activo:true},
+      {id:5,nombre:'Toallas y Sábanas',categoria:'Hogar',prioridad:'BAJA',stockActual:40,metaStock:50,activo:true},
+      {id:6,nombre:'Leche en Polvo',categoria:'Alimentación',prioridad:'ALTA',stockActual:88,metaStock:200,activo:true},
+    ];
+  }
+  renderCatalogo();
+  renderTrazabilidad();
+}
+
+function filtrarCat(p,btn){
+  filtroCat=p;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCatalogo();
+}
+
+function renderCatalogo(){
+  const data = filtroCat==='todos' ? catalogoData : catalogoData.filter(a=>a.prioridad===filtroCat);
+  const t = document.getElementById('tb-catalogo');
+  if(!data.length){t.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--gray);">Sin artículos.</td></tr>';return;}
+  t.innerHTML = data.map(a=>{
+    const pct = a.metaStock ? Math.min(100,Math.round((a.stockActual/a.metaStock)*100)) : 0;
+    const prioCls = {ALTA:'prio-alta',MEDIA:'prio-media',BAJA:'prio-baja'}[a.prioridad]||'';
+    return `<tr>
+      <td>${a.id}</td>
+      <td><strong>${a.nombre}</strong></td>
+      <td>${a.categoria||a.rangoEdad||'—'}</td>
+      <td><span class="badge ${prioCls}">${a.prioridad}</span></td>
+      <td><strong>${a.stockActual||0}</strong></td>
+      <td>${a.metaStock||0}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="bar-mini" style="width:80px;"><div class="bar-mini-fill" style="width:${pct}%;"></div></div>
+          <span style="font-size:.75rem;font-weight:700;">${pct}%</span>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderTrazabilidad(){
+  const t = document.getElementById('tb-trazabilidad');
+  if(!catalogoData.length){t.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--gray);">Sin datos.</td></tr>';return;}
+  
+  // Aggregate donations by article
+  const artMap = {};
+  donaciones.forEach(d=>{
+    const key = d.articuloNombre||'Sin artículo';
+    if(!artMap[key]) artMap[key]={total:0,aprobado:0,pendiente:0,rechazado:0,meta:0};
+    artMap[key].total += (d.cantidad||0);
+    const est = (d.estado||'').toLowerCase();
+    if(est==='aprobado') artMap[key].aprobado += (d.cantidad||0);
+    else if(est==='pendiente') artMap[key].pendiente += (d.cantidad||0);
+    else if(est==='rechazado') artMap[key].rechazado += (d.cantidad||0);
+  });
+  // Also add catalog items that haven't received donations
+  catalogoData.forEach(a=>{
+    if(!artMap[a.nombre]) artMap[a.nombre]={total:0,aprobado:0,pendiente:0,rechazado:0,meta:a.metaStock||0};
+    else artMap[a.nombre].meta = a.metaStock||0;
+  });
+
+  const rows = Object.entries(artMap);
+  if(!rows.length){t.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--gray);">Sin movimientos.</td></tr>';return;}
+  t.innerHTML = rows.map(([nombre,d])=>{
+    const pct = d.meta ? Math.min(100,Math.round((d.aprobado/d.meta)*100)) : 0;
+    return `<tr>
+      <td><strong>${nombre}</strong></td>
+      <td>${d.total}</td>
+      <td style="color:#065F46;font-weight:800;">${d.aprobado}</td>
+      <td style="color:#92400E;font-weight:800;">${d.pendiente}</td>
+      <td style="color:#991B1B;font-weight:800;">${d.rechazado}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="bar-mini" style="width:80px;"><div class="bar-mini-fill" style="width:${pct}%;"></div></div>
+          <span style="font-size:.75rem;font-weight:700;">${pct}% (${d.aprobado}/${d.meta})</span>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+</script>
+</body>
+</html>

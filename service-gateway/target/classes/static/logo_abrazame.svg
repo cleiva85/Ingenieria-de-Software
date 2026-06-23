@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Figura verde (arriba) -->
+  <circle cx="100" cy="38" r="14" fill="#8DC5A0"/>
+  <path d="M100 52 Q120 70 115 95 Q100 85 85 95 Q80 70 100 52Z" fill="#8DC5A0"/>
+  <!-- Figura rosa (izquierda) -->
+  <circle cx="48" cy="128" r="14" fill="#E8A0B0"/>
+  <path d="M48 142 Q28 145 22 168 Q40 172 65 160 Q62 148 48 142Z" fill="#E8A0B0"/>
+  <!-- Figura lila (derecha) -->
+  <circle cx="152" cy="128" r="14" fill="#C4A8D4"/>
+  <path d="M152 142 Q172 145 178 168 Q160 172 135 160 Q138 148 152 142Z" fill="#C4A8D4"/>
+  <!-- Arco verde -->
+  <path d="M72 55 Q40 80 50 125" stroke="#8DC5A0" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <!-- Arco rosa -->
+  <path d="M60 148 Q75 180 100 185" stroke="#E8A0B0" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <!-- Arco lila -->
+  <path d="M128 55 Q160 80 150 125" stroke="#C4A8D4" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <!-- Figura central -->
+  <circle cx="100" cy="105" r="18" fill="#6B7CA4"/>
+  <!-- Sonrisa -->
+  <path d="M91 110 Q100 118 109 110" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fundación Abrázame — Acceso Voluntario</title>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--green:#8DC5A0;--green-dark:#6aaa85;--green-light:#EBF5EE;--lilac:#C4A8D4;--gray:#6B7280;--border:#E5E7EB;--text:#3D3D3D;--radius:10px;--error:#DC2626;--error-bg:#FEF2F2;--success:#059669;--success-bg:#ECFDF5;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Nunito',sans-serif;background:linear-gradient(135deg,#EBF5EE,#F2EDF7);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+    .card{width:100%;max-width:420px;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 12px 48px rgba(141,197,160,0.2);}
+    .header{background:linear-gradient(135deg,var(--lilac),#a888be);padding:28px 32px 24px;text-align:center;}
+    .header span{font-size:2.5rem;display:block;margin-bottom:8px;}
+    .header h1{font-weight:800;font-size:1.3rem;color:#fff;}
+    .header p{font-size:0.75rem;color:rgba(255,255,255,0.8);margin-top:4px;text-transform:uppercase;letter-spacing:0.1em;}
+    .form-body{padding:28px 32px 32px;}
+    .field{margin-bottom:16px;}
+    .field label{display:block;font-size:0.79rem;font-weight:800;color:var(--text);margin-bottom:5px;}
+    .req{color:var(--error);}
+    input[type="email"],input[type="password"]{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Nunito',sans-serif;font-size:0.88rem;outline:none;transition:border-color 0.2s;}
+    input:focus{border-color:var(--lilac);box-shadow:0 0 0 3px rgba(196,168,212,0.2);}
+    .pass-wrap{position:relative;}
+    .pass-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;}
+    .field-error{font-size:0.73rem;color:var(--error);margin-top:4px;display:none;}
+    .field-error.show{display:block;}
+    .alert{padding:12px 16px;border-radius:var(--radius);font-size:0.82rem;font-weight:700;margin-bottom:16px;display:none;}
+    .alert.show{display:block;}
+    .alert-err{background:var(--error-bg);color:var(--error);border:1px solid #FECACA;}
+    .submit-btn{width:100%;background:var(--lilac);color:#fff;font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:15px;border:none;border-radius:50px;cursor:pointer;margin-top:8px;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+    .submit-btn:hover{background:var(--lilac-dark,#a888be);}
+    .submit-btn.loading{opacity:0.7;pointer-events:none;}
+    .spinner{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;}
+    .submit-btn.loading .spinner{display:inline-block;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .info-box{background:var(--green-light);border:1px solid var(--green);border-radius:8px;padding:12px 14px;font-size:0.78rem;color:#166534;margin-bottom:18px;line-height:1.5;}
+    .footer-links{text-align:center;padding:16px;border-top:1px solid var(--border);background:#F9FAFB;}
+    .footer-links a{font-size:0.78rem;color:var(--gray);text-decoration:underline;margin:0 8px;}
+  </style>
+</head>
+<body>
+<script>const API='http://localhost:9090/auth';</script>
+<div class="card">
+  <div class="header">
+    <span>🙌</span>
+    <h1>Portal Voluntarios</h1>
+    <p>Fundación Abrázame</p>
+  </div>
+  <div class="form-body">
+    <div class="info-box">Este portal es exclusivo para voluntarios aprobados. Si aún no has recibido tu correo de activación, por favor espera.</div>
+    <div id="alertLogin" class="alert alert-err"></div>
+    <div class="field">
+      <label>Correo Electrónico <span class="req">*</span></label>
+      <input type="email" id="l_email" placeholder="tu@correo.com" autocomplete="email"/>
+      <div class="field-error" id="err_email">Correo inválido.</div>
+    </div>
+    <div class="field">
+      <label>Contraseña <span class="req">*</span></label>
+      <div class="pass-wrap">
+        <input type="password" id="l_pass" placeholder="Tu contraseña"/>
+        <button class="pass-toggle" type="button" onclick="togglePass()">👁️</button>
+      </div>
+      <div class="field-error" id="err_pass">Ingresa tu contraseña.</div>
+    </div>
+    <button class="submit-btn" id="btnLogin" onclick="doLogin()">
+      <span class="spinner"></span>Ingresar
+    </button>
+  </div>
+  <div class="footer-links">
+    
+    <a href="login_admin.html">Portal Admin</a>
+  </div>
+</div>
+<script>
+function togglePass(){const i=document.getElementById('l_pass');const b=document.querySelector('.pass-toggle');i.type=i.type==='password'?'text':'password';b.textContent=i.type==='text'?'🙈':'👁️';}
+function showAlert(msg){const el=document.getElementById('alertLogin');el.textContent=msg;el.classList.add('show');}
+function showErr(id,show){const el=document.getElementById(id);if(el)el.classList.toggle('show',show);}
+
+async function doLogin(){
+  const email=document.getElementById('l_email').value.trim();
+  const pass=document.getElementById('l_pass').value;
+  let ok=true;
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showErr('err_email',true);ok=false;}else showErr('err_email',false);
+  if(!pass){showErr('err_pass',true);ok=false;}else showErr('err_pass',false);
+  if(!ok) return;
+  const btn=document.getElementById('btnLogin');
+  btn.classList.add('loading');
+  try{
+    const res=await fetch(API+'/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass,rol:'Voluntario'})});
+    const data=await res.json();
+    if(data.success){
+      sessionStorage.setItem('usuario',JSON.stringify({
+        nombre: data.nombre,
+        email,
+        rol: data.rol,
+        primerNombre: (data.nombre||'').split(' ')[0],
+        apellidoP: (data.nombre||'').split(' ')[1]||''
+      }));
+      // Redirigir a vista_voluntario o al redirectUrl que venga del backend
+      const destino = data.redirectUrl || 'vista_voluntario.html';
+      window.location.href = destino;
+    } else {
+      showAlert(''+(data.mensaje || data.message || 'Credenciales incorrectas.'));
+    }
+  }catch(e){
+    showAlert('No se pudo conectar. Verifica que los servicios estén corriendo.');
+  }finally{btn.classList.remove('loading');}
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+</script>
+
+<script>
+// Mostrar banner si viene de activar cuenta
+if(new URLSearchParams(window.location.search).get('nuevo')==='1'){
+  const banner=document.createElement('div');
+  banner.style.cssText='background:#D1FAE5;border:1px solid #6EE7B7;border-radius:10px;padding:14px 18px;margin-bottom:16px;font-size:0.85rem;color:#065F46;font-weight:700;text-align:center;';
+  banner.innerHTML='¡Cuenta activada! Ya puedes iniciar sesión con tu correo y contraseña.';
+  document.querySelector('.form-body').prepend(banner);
+}
+</script>
+</body>
+</html>
