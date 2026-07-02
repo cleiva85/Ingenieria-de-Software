@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Abrázame — Vista Director</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--purple:#7C3AED;--purple-dark:#5B21B6;--purple-light:#F5F3FF;--purple-mid:#DDD6FE;
+      --green:#8DC5A0;--green-dark:#6aaa85;--green-light:#EBF5EE;
+      --white:#fff;--gray:#6B7280;--border:#E5E7EB;--text:#1E293B;--radius:10px;
+      --pend-bg:#FEF3C7;--pend-txt:#92400E;--apro-bg:#D1FAE5;--apro-txt:#065F46;
+      --rech-bg:#FEE2E2;--rech-txt:#991B1B;--asig-bg:#E0E7FF;--asig-txt:#3730A3;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Nunito',sans-serif;background:#F3F4F6;min-height:100vh;}
+    .topbar{background:linear-gradient(135deg,var(--purple-dark),var(--purple));display:flex;align-items:center;gap:14px;padding:0 28px;height:56px;}
+    .topbar-logo{display:flex;align-items:center;gap:10px;}
+    .topbar-logo svg{width:34px;height:34px;}
+    .topbar-logo span{color:#fff;font-weight:900;font-size:1rem;}
+    .topbar-badge{background:rgba(255,255,255,.2);color:#fff;font-size:.7rem;font-weight:800;padding:3px 12px;border-radius:50px;letter-spacing:.07em;}
+    .topbar-user{margin-left:auto;color:rgba(255,255,255,.85);font-size:.78rem;}
+    .btn-logout{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);color:#fff;font-family:'Nunito',sans-serif;font-size:.75rem;font-weight:800;padding:6px 16px;border-radius:50px;cursor:pointer;margin-left:12px;}
+    .btn-logout:hover{background:rgba(255,255,255,.22);}
+    .content{max-width:1200px;margin:0 auto;padding:24px 16px 60px;}
+    .page-title{font-size:1.3rem;font-weight:900;color:var(--text);margin-bottom:4px;}
+    .page-sub{font-size:.82rem;color:var(--gray);margin-bottom:24px;}
+    .tabs{display:flex;gap:4px;margin-bottom:24px;flex-wrap:wrap;}
+    .tab{padding:9px 22px;border-radius:50px;border:2px solid var(--border);background:#fff;font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:800;cursor:pointer;color:var(--gray);transition:all .2s;}
+    .tab.active,.tab:hover{background:var(--purple);color:#fff;border-color:var(--purple);}
+    .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px;}
+    .stat{background:#fff;border-radius:12px;padding:18px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+    .stat .num{font-size:1.8rem;font-weight:900;color:var(--purple);}
+    .stat .lbl{font-size:.72rem;font-weight:800;color:var(--gray);text-transform:uppercase;margin-top:4px;}
+    .sec{background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:22px;overflow:hidden;}
+    .sec-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);background:#F9FAFB;}
+    .sec-head h2{font-size:.88rem;font-weight:900;color:var(--text);text-transform:uppercase;letter-spacing:.05em;}
+    table{width:100%;border-collapse:collapse;}
+    th{font-size:.72rem;font-weight:800;color:var(--gray);text-transform:uppercase;padding:10px 16px;text-align:left;background:#F9FAFB;border-bottom:1px solid var(--border);}
+    td{padding:12px 16px;font-size:.83rem;color:var(--text);border-bottom:1px solid #F3F4F6;vertical-align:middle;}
+    tr:last-child td{border-bottom:none;}tr:hover td{background:#faf8ff;}
+    .badge{display:inline-block;padding:3px 10px;border-radius:50px;font-size:.72rem;font-weight:800;}
+    .badge-pend{background:var(--pend-bg);color:var(--pend-txt);}
+    .badge-apro{background:var(--apro-bg);color:var(--apro-txt);}
+    .badge-rech{background:var(--rech-bg);color:var(--rech-txt);}
+    .badge-asig{background:var(--asig-bg);color:var(--asig-txt);}
+    .badge-grande{background:var(--purple-mid);color:var(--purple-dark);}
+    .badge-entregado{background:#D1FAE5;color:#065F46;}
+    .btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:.75rem;font-weight:800;cursor:pointer;transition:all .15s;}
+    .btn-apro{background:var(--apro-bg);color:var(--apro-txt);}.btn-apro:hover{background:#6EE7B7;}
+    .btn-rech{background:var(--rech-bg);color:var(--rech-txt);}.btn-rech:hover{background:#FECACA;}
+    .btn-asig{background:var(--asig-bg);color:var(--asig-txt);}.btn-asig:hover{background:#C7D2FE;}
+    .btn-ticket{background:var(--purple-mid);color:var(--purple-dark);}.btn-ticket:hover{background:#C4B5FD;}
+    .btn-ver{background:#F3F4F6;color:var(--gray);}.btn-ver:hover{background:#E5E7EB;}
+    .acciones{display:flex;gap:6px;flex-wrap:wrap;}
+    .chart-wrap{padding:20px;}
+    .bar-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+    .bar-label{width:140px;font-size:.78rem;font-weight:700;color:var(--gray);flex-shrink:0;}
+    .bar-track{flex:1;background:#F3F4F6;border-radius:50px;height:22px;overflow:hidden;}
+    .bar-fill{height:100%;border-radius:50px;display:flex;align-items:center;padding-left:10px;font-size:.73rem;font-weight:800;color:#fff;transition:width .6s;}
+    .bar-val{font-size:.78rem;font-weight:800;color:var(--text);width:40px;text-align:right;}
+    .panel{display:none;}.panel.active{display:block;}
+    .toast{display:none;position:fixed;bottom:28px;right:28px;background:var(--purple);color:#fff;padding:12px 22px;border-radius:10px;font-weight:700;font-size:.85rem;z-index:999;}
+    .toast.show{display:block;animation:fi .3s;}
+    @keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    /* BUSCADOR BENEFICIARIO */
+    .search-box{display:flex;gap:8px;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border);}
+    .search-box input,.search-box select{font-family:'Nunito',sans-serif;font-size:.82rem;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;outline:none;}
+    .search-box input:focus,.search-box select:focus{border-color:var(--purple);}
+    .ticket-card{background:#F9FAFB;border:1.5px solid var(--border);border-radius:12px;padding:16px 20px;margin:12px 20px;}
+    .ticket-card.apro{border-color:#6EE7B7;background:#F0FFF4;}
+    .ticket-card.rech{border-color:#FECACA;background:#FFF5F5;}
+    .ticket-card.pend{border-color:#FDE68A;background:#FFFBEB;}
+  </style>
+  <style>
+    /* ── Estilo unificado con panel_admin.html para Inventario y Trazabilidad ── */
+    .table-wrap{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:24px;}
+    .table-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);}
+    .table-head h2{font-size:.9rem;font-weight:900;color:var(--text);text-transform:uppercase;letter-spacing:.05em;}
+    .bar-mini{height:8px;background:#e5e7eb;border-radius:50px;overflow:hidden;min-width:80px;display:inline-block;vertical-align:middle;}
+    .bar-mini-fill{height:100%;border-radius:50px;background:var(--green-dark,#6aaa85);}
+    .prio-alta{background:#FEE2E2;color:#991B1B;padding:3px 10px;border-radius:50px;font-size:.72rem;font-weight:800;display:inline-block;}
+    .prio-media{background:#FEF3C7;color:#92400E;padding:3px 10px;border-radius:50px;font-size:.72rem;font-weight:800;display:inline-block;}
+    .prio-baja{background:#D1FAE5;color:#065F46;padding:3px 10px;border-radius:50px;font-size:.72rem;font-weight:800;display:inline-block;}
+    .toolbar{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+    .filter-btn{padding:7px 18px;border-radius:50px;border:2px solid var(--border);background:#fff;font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:800;cursor:pointer;transition:all .2s;color:var(--gray);}
+    .filter-btn.active,.filter-btn:hover{background:var(--green-dark,#6aaa85);color:#fff;border-color:var(--green-dark,#6aaa85);}
+  </style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+      <path d="M50 18 A34 34 0 0 1 84 68" stroke="#8DC5A0" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <path d="M16 68 A34 34 0 0 1 50 18" stroke="#E8A0B0" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <path d="M84 68 A34 34 0 0 1 16 68" stroke="#C4A8D4" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <circle cx="50" cy="14" r="7" fill="#8DC5A0"/><circle cx="13" cy="70" r="7" fill="#E8A0B0"/>
+      <circle cx="87" cy="70" r="7" fill="#C4A8D4"/><circle cx="50" cy="46" r="10" fill="#fff"/>
+      <path d="M45 50 Q50 55 55 50" stroke="#6B7CA4" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>
+    <span>Abrázame</span>
+  </div>
+  <span class="topbar-badge">📋 DIRECTOR/A</span>
+  <span class="topbar-user" id="topbar-user">Bienvenido/a</span>
+  <button class="btn-logout" onclick="window.location.href='login_usuario.html'">Cerrar sesión</button>
+</div>
+
+<div class="content">
+  <p class="page-title">Vista Director</p>
+  <p class="page-sub">Aprueba donaciones, asigna beneficiarios y emite tickets de autorización.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="num" id="s-total">—</div><div class="lbl">Total</div></div>
+    <div class="stat"><div class="num" id="s-grandes" style="color:var(--purple);">—</div><div class="lbl">&gt;10 unidades</div></div>
+    <div class="stat"><div class="num" id="s-apro" style="color:#065F46;">—</div><div class="lbl">Aprobadas</div></div>
+    <div class="stat"><div class="num" id="s-asig" style="color:#3730A3;">—</div><div class="lbl">Con Beneficiario</div></div>
+    <div class="stat"><div class="num" id="s-entregado" style="color:#059669;">—</div><div class="lbl">Entregadas</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="setPanel('grandes',this)">📦 Donaciones &gt;10 u.</button>
+    <button class="tab" onclick="setPanel('beneficiarios',this)">👤 Asignar Beneficiario</button>
+    <button class="tab" onclick="setPanel('tickets',this)">🎫 Tickets Aprobación</button>
+    <button class="tab" onclick="setPanel('inventario',this)">📦 Inventario</button>
+    <button class="tab" onclick="setPanel('entregas',this)">✅ Entregas Realizadas</button>
+    <button class="tab" onclick="setPanel('reportes',this)">📊 Reportes</button>
+    <button class="tab" onclick="setPanel('trazabilidad',this)">🔍 Trazabilidad</button>
+  </div>
+
+  <!-- PANEL: DONACIONES GRANDES -->
+  <div id="panel-grandes" class="panel active">
+    <div class="sec">
+      <div class="sec-head"><h2>📦 Donaciones &gt; 10 unidades — Requieren aprobación del Director</h2></div>
+      <table>
+        <thead><tr>
+          <th>Código</th><th>Donante</th><th>Artículo</th><th>Cant.</th>
+          <th>Estado</th><th>Beneficiario Asignado</th><th>Acciones</th>
+        </tr></thead>
+        <tbody id="tb-grandes"><tr><td colspan="7" style="text-align:center;padding:24px;color:var(--gray);">Cargando...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PANEL: ASIGNAR BENEFICIARIO -->
+  <div id="panel-beneficiarios" class="panel">
+    <div class="sec">
+      <div class="sec-head">
+        <h2>👤 Asignar Beneficiario a Donación</h2>
+        <button class="btn btn-asig" onclick="abrirModalAsignacion()">+ Nueva Asignación</button>
+      </div>
+      <div class="search-box">
+        <input type="text" id="buscar-benef" placeholder="🔍 Buscar beneficiario por nombre..." oninput="filtrarBeneficiarios()">
+        <select id="filtro-rango" onchange="filtrarBeneficiarios()">
+          <option value="">Todos los rangos de edad</option>
+          <option value="0-2">0–2 años</option>
+          <option value="3-6">3–6 años</option>
+          <option value="7-12">7–12 años</option>
+          <option value="13-17">13–17 años</option>
+          <option value="Familia">Familia</option>
+          <option value="Grupo Hogar">Grupo Hogar</option>
+        </select>
+        <select id="filtro-fundacion" onchange="filtrarBeneficiarios()">
+          <option value="">Todas las fundaciones/residencias</option>
+          <option value="Fundación Padre Semería">Fundación Padre Semería</option>
+          <option value="Fundación María de la Luz">Fundación María de la Luz</option>
+          <option value="Fundación Pléyades">Fundación Pléyades</option>
+          <option value="Residencia Carlos Antúnez">Residencia Carlos Antúnez</option>
+          <option value="Residencia La Goleta">Residencia La Goleta</option>
+        </select>
+      </div>
+      <table>
+        <thead><tr>
+          <th>ID</th><th>Nombre</th><th>Edad / Rango</th><th>Fundación / Residencia</th><th>Contacto</th><th>Acciones</th>
+        </tr></thead>
+        <tbody id="tb-beneficiarios"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--gray);">Cargando beneficiarios...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PANEL: TICKETS DE APROBACIÓN -->
+  <div id="panel-tickets" class="panel">
+    <div class="sec">
+      <div class="sec-head"><h2>🎫 Tickets de Aprobación — Decisiones del Director</h2></div>
+      <table>
+        <thead><tr>
+          <th>N° Ticket</th><th>Donación</th><th>Artículo</th><th>Beneficiario</th>
+          <th>Estado Ticket</th><th>Fecha Decisión</th><th>Acciones</th>
+        </tr></thead>
+        <tbody id="tb-tickets"><tr><td colspan="7" style="text-align:center;padding:24px;color:var(--gray);">Sin tickets generados.</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PANEL: REPORTES -->
+  <div id="panel-reportes" class="panel">
+    <div class="sec">
+      <div class="sec-head"><h2>📊 Reporte por Estado</h2></div>
+      <div class="chart-wrap" id="chart-estados"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-head"><h2>📦 Top 5 Artículos más Donados</h2></div>
+      <div class="chart-wrap" id="chart-articulos"></div>
+    </div>
+    <div class="sec">
+      <div class="sec-head"><h2>👤 Donaciones por Beneficiario</h2></div>
+      <div class="chart-wrap" id="chart-beneficiarios"></div>
+    </div>
+  </div>
+
+  <!-- PANEL: INVENTARIO -->
+  <div id="panel-inventario" class="panel">
+    <div class="toolbar">
+      <button class="filter-btn active" onclick="filtrarInv('todos',this)">Todos</button>
+      <button class="filter-btn" onclick="filtrarInv('ALTA',this)">🔴 Prioridad Alta</button>
+      <button class="filter-btn" onclick="filtrarInv('MEDIA',this)">🟠 Prioridad Media</button>
+      <button class="filter-btn" onclick="filtrarInv('BAJA',this)">🟢 Prioridad Baja</button>
+    </div>
+    <div class="table-wrap">
+      <div class="table-head">
+        <h2>📦 Catálogo — Inventario Actual</h2>
+        <button class="btn btn-ver" onclick="cargarInventario()">🔄 Actualizar</button>
+      </div>
+      <table>
+        <thead><tr><th>ID</th><th>Artículo</th><th>Categoría</th><th>Prioridad</th><th>Stock Actual</th><th>Meta Stock</th><th>Estado</th></tr></thead>
+        <tbody id="tb-inventario"><tr><td colspan="7" style="text-align:center;padding:24px;color:var(--gray);">Cargando inventario...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PANEL: ENTREGAS REALIZADAS -->
+  <div id="panel-entregas" class="panel">
+    <div class="sec">
+      <div class="sec-head">
+        <h2>✅ Entregas Realizadas — Historial con destino exacto</h2>
+        <button class="btn btn-ver" onclick="cargarHistorialEntregas()">🔄 Actualizar</button>
+      </div>
+      <table>
+        <thead><tr>
+          <th>Donación</th><th>Artículo</th><th>Cant.</th><th>Beneficiario</th>
+          <th>Fundación / Residencia</th><th>Confirmado por</th><th>Fecha</th>
+        </tr></thead>
+        <tbody id="tb-entregas"><tr><td colspan="7" style="text-align:center;padding:24px;color:var(--gray);">Cargando historial...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PANEL: TRAZABILIDAD -->
+  <div id="panel-trazabilidad" class="panel">
+    <div class="table-wrap">
+      <div class="table-head">
+        <h2>🔍 Trazabilidad — Cantidades donadas por artículo</h2>
+        <button class="btn btn-ver" onclick="cargarTrazabilidadArticulo()">🔄 Actualizar</button>
+      </div>
+      <table>
+        <thead><tr><th>Artículo</th><th>Total Donado</th><th>Aprobado</th><th>Pendiente</th><th>Rechazado</th><th>% Completado</th></tr></thead>
+        <tbody id="tb-trazabilidad-articulo"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--gray);">Cargando…</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="sec">
+      <div class="sec-head"><h2>🔍 Trazabilidad Detallada — Por Donación Individual</h2></div>
+      <table>
+        <thead><tr>
+          <th>Código</th><th>Donante</th><th>Artículo</th><th>Cant.</th>
+          <th>Estado</th><th>Beneficiario</th><th>Ticket</th><th>Entrega</th><th>Fecha</th>
+        </tr></thead>
+        <tbody id="tb-trazabilidad"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<!-- MODAL: DETALLE DONACIÓN -->
+<div id="dir-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:#fff;border-radius:18px;padding:28px;max-width:600px;width:95%;position:relative;max-height:90vh;overflow-y:auto;">
+    <button onclick="document.getElementById('dir-overlay').style.display='none'" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:#aaa;">✕</button>
+    <h3 style="font-size:1rem;font-weight:900;margin-bottom:14px;">📄 Detalle de Donación</h3>
+    <div id="dir-detalle"></div>
+  </div>
+</div>
+
+<!-- MODAL: ASIGNAR BENEFICIARIO A DONACIÓN -->
+<div id="modal-asignacion" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:#fff;border-radius:18px;padding:28px;max-width:640px;width:95%;position:relative;max-height:90vh;overflow-y:auto;">
+    <button onclick="document.getElementById('modal-asignacion').style.display='none'" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:#aaa;">✕</button>
+    <h3 style="font-size:1rem;font-weight:900;margin-bottom:18px;">🎫 Asignar Beneficiario y Crear Ticket</h3>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:.8rem;font-weight:800;color:var(--gray);display:block;margin-bottom:4px;">DONACIÓN</label>
+      <select id="sel-donacion" style="width:100%;font-family:'Nunito',sans-serif;font-size:.85rem;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;outline:none;">
+        <option value="">— Seleccionar donación aprobada —</option>
+      </select>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:.8rem;font-weight:800;color:var(--gray);display:block;margin-bottom:4px;">BENEFICIARIO</label>
+      <select id="sel-beneficiario-asig" style="width:100%;font-family:'Nunito',sans-serif;font-size:.85rem;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;outline:none;">
+        <option value="">— Seleccionar beneficiario —</option>
+      </select>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:.8rem;font-weight:800;color:var(--gray);display:block;margin-bottom:4px;">OBSERVACIONES DEL DIRECTOR</label>
+      <textarea id="obs-ticket" rows="3" style="width:100%;font-family:'Nunito',sans-serif;font-size:.85rem;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;outline:none;resize:vertical;" placeholder="Justificación o instrucciones para la entrega..."></textarea>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;">
+      <button class="btn btn-rech" onclick="document.getElementById('modal-asignacion').style.display='none'">Cancelar</button>
+      <button class="btn btn-apro" onclick="crearTicketAsignacion()">✅ Crear Ticket de Aprobación</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: RESOLVER TICKET -->
+<div id="modal-ticket" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:#fff;border-radius:18px;padding:28px;max-width:560px;width:95%;position:relative;">
+    <button onclick="document.getElementById('modal-ticket').style.display='none'" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:#aaa;">✕</button>
+    <h3 style="font-size:1rem;font-weight:900;margin-bottom:14px;">🎫 Resolver Ticket de Aprobación</h3>
+    <div id="ticket-info" style="margin-bottom:16px;padding:12px;background:#F9FAFB;border-radius:10px;font-size:.85rem;"></div>
+    <div style="margin-bottom:14px;">
+      <label style="font-size:.8rem;font-weight:800;color:var(--gray);display:block;margin-bottom:4px;">MOTIVO / OBSERVACIONES</label>
+      <textarea id="motivo-ticket" rows="3" style="width:100%;font-family:'Nunito',sans-serif;font-size:.85rem;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;outline:none;resize:vertical;" placeholder="Indicar motivo de rechazo si corresponde..."></textarea>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-rech" onclick="resolverTicket('Rechazado')">❌ Rechazar</button>
+      <button class="btn btn-apro" onclick="resolverTicket('Aprobado')">✅ Aprobar Entrega</button>
+    </div>
+    <input type="hidden" id="ticket-id-activo">
+  </div>
+</div>
+
+<script>
+const API_GESTION    = 'http://'+window.location.hostname+':9090/gestion';
+const API_BENEFIC    = 'http://'+window.location.hostname+':9090/gestion/beneficiarios';
+const API_TICKETS    = 'http://'+window.location.hostname+':9090/gestion/tickets';
+const API_CATALOGO   = 'http://'+window.location.hostname+':9090/catalogo';
+const API_HISTORIAL  = 'http://'+window.location.hostname+':9090/gestion/historial-entregas';
+
+let donaciones   = [];
+let beneficiarios = [];
+let tickets      = [];
+let inventario   = [];
+let historialEntregas = [];
+let directorNombre = localStorage.getItem('userName') || 'Director';
+let directorId     = parseInt(localStorage.getItem('userId') || '0');
+
+// ───── INIT ─────
+async function cargar(){
+  document.getElementById('topbar-user').textContent = directorNombre;
+  await Promise.all([cargarDonaciones(), cargarBeneficiarios(), cargarTickets(), cargarInventario(), cargarHistorialEntregas()]);
+  actualizarStats();
+  renderGrandes();
+  renderBeneficiarios();
+  renderTickets();
+  renderReportes();
+  renderTrazabilidad();
+  renderTrazabilidadArticulo();
+  poblarSelects();
+}
+
+async function cargarDonaciones(){
+  try{
+    const r = await fetch(API_GESTION);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const data = await r.json();
+    donaciones = (Array.isArray(data) && data.length) ? data : mockDonaciones();
+  }catch(e){ console.warn('Usando datos de ejemplo (donaciones):', e.message); donaciones = mockDonaciones(); }
+}
+
+async function cargarBeneficiarios(){
+  try{
+    const r = await fetch(API_BENEFIC);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const data = await r.json();
+    beneficiarios = (Array.isArray(data) && data.length) ? data : mockBeneficiarios();
+  }catch(e){ console.warn('Usando datos de ejemplo (beneficiarios):', e.message); beneficiarios = mockBeneficiarios(); }
+}
+
+async function cargarTickets(){
+  try{
+    const r = await fetch(API_TICKETS);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const data = await r.json();
+    tickets = Array.isArray(data) ? data : mockTickets();
+  }catch(e){ console.warn('Usando datos de ejemplo (tickets):', e.message); tickets = mockTickets(); }
+}
+
+async function cargarInventario(){
+  try{
+    const r = await fetch(API_CATALOGO);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const data = await r.json();
+    inventario = (Array.isArray(data) && data.length) ? data : mockInventario();
+  }catch(e){ console.warn('Usando datos de ejemplo (inventario):', e.message); inventario = mockInventario(); }
+  renderInventario();
+}
+
+async function cargarHistorialEntregas(){
+  try{
+    const r = await fetch(API_HISTORIAL);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const data = await r.json();
+    historialEntregas = Array.isArray(data) ? data : mockHistorialEntregas();
+  }catch(e){ console.warn('Usando datos de ejemplo (historial entregas):', e.message); historialEntregas = mockHistorialEntregas(); }
+  renderHistorialEntregas();
+}
+
+// ───── MOCK DATA (mientras el backend no tenga estos endpoints) ─────
+function mockDonaciones(){
+  return [
+    {id:1,donId:'DON-001',nombreDonante:'Juan Pérez',articuloNombre:'Abrigos',cantidad:15,estado:'Aprobado',beneficiarioId:null,beneficiarioNombre:null,entregaConfirmada:false,fechaCreacion:'2026-06-01T10:00:00'},
+    {id:2,donId:'DON-002',nombreDonante:'María Soto',articuloNombre:'Mochilas',cantidad:20,estado:'Aprobado',beneficiarioId:8,beneficiarioNombre:'Francisca Medina',entregaConfirmada:false,fechaCreacion:'2026-06-02T11:00:00'},
+    {id:3,donId:'DON-003',nombreDonante:'Empresa XYZ',articuloNombre:'Cuadernos',cantidad:50,estado:'Entregado',beneficiarioId:3,beneficiarioNombre:'Diego Morales',entregaConfirmada:true,fechaCreacion:'2026-06-03T09:00:00'},
+    {id:4,donId:'DON-004',nombreDonante:'Luis Torres',articuloNombre:'Zapatillas',cantidad:12,estado:'Pendiente',beneficiarioId:null,beneficiarioNombre:null,entregaConfirmada:false,fechaCreacion:'2026-06-05T14:00:00'},
+  ];
+}
+function mockBeneficiarios(){
+  return [
+    // ── Fundación Padre Semería ──
+    {id:1,nombre:'María Suárez',edadActual:5,rangoEdad:'3-6 años',fundacionResidencia:'Fundación Padre Semería',region:'Región Metropolitana',contactoNombre:'Pamela Soto Vidal',contactoCargo:'Directora',contactoTelefono:'+56226543201',contactoEmail:'p.soto@padresemeria.cl',descripcionNecesidad:'Ropa de invierno talla 5, zapatillas talla 26, mochila pre-kinder'},
+    {id:2,nombre:'Ignacio Flores',edadActual:1,rangoEdad:'0-2 años',fundacionResidencia:'Fundación Padre Semería',region:'Región Metropolitana',contactoNombre:'Pamela Soto Vidal',contactoCargo:'Directora',contactoTelefono:'+56226543201',contactoEmail:'p.soto@padresemeria.cl',descripcionNecesidad:'Pañales talla M, ropa de abrigo 6-9 meses'},
+    {id:3,nombre:'Diego Morales',edadActual:11,rangoEdad:'7-12 años',fundacionResidencia:'Fundación Padre Semería',region:'Región Metropolitana',contactoNombre:'Pamela Soto Vidal',contactoCargo:'Directora',contactoTelefono:'+56226543201',contactoEmail:'p.soto@padresemeria.cl',descripcionNecesidad:'Mochila escolar, cuadernos, zapatos talla 34'},
+    {id:4,nombre:'Familia López — 2 niños',edadActual:null,rangoEdad:'Familia',fundacionResidencia:'Fundación Padre Semería',region:'Región Metropolitana',contactoNombre:'Pamela Soto Vidal',contactoCargo:'Directora',contactoTelefono:'+56226543201',contactoEmail:'p.soto@padresemeria.cl',descripcionNecesidad:'Artículos para 2 hermanos: 4 y 8 años. Ropa, útiles, calzado.'},
+    // ── Fundación María de la Luz ──
+    {id:5,nombre:'Valentina Castro',edadActual:1,rangoEdad:'0-2 años',fundacionResidencia:'Fundación María de la Luz',region:'Región Metropolitana',contactoNombre:'Beatriz Hernández Paz',contactoCargo:'Coordinadora de Hogar',contactoTelefono:'+56226543202',contactoEmail:'b.hernandez@mariadelaluz.cl',descripcionNecesidad:'Pañales talla P, ropa 0-3 meses, peluches'},
+    {id:6,nombre:'Sofía Ramírez',edadActual:5,rangoEdad:'3-6 años',fundacionResidencia:'Fundación María de la Luz',region:'Región Metropolitana',contactoNombre:'Beatriz Hernández Paz',contactoCargo:'Coordinadora de Hogar',contactoTelefono:'+56226543202',contactoEmail:'b.hernandez@mariadelaluz.cl',descripcionNecesidad:'Mochila pre-kinder, cuadernos, lápices de colores'},
+    {id:7,nombre:'Camila Navarro',edadActual:13,rangoEdad:'13-17 años',fundacionResidencia:'Fundación María de la Luz',region:'Región Metropolitana',contactoNombre:'Beatriz Hernández Paz',contactoCargo:'Coordinadora de Hogar',contactoTelefono:'+56226543202',contactoEmail:'b.hernandez@mariadelaluz.cl',descripcionNecesidad:'Set geometría, cuadernos universitarios, ropa deportiva talla M'},
+    {id:8,nombre:'Francisca Medina',edadActual:16,rangoEdad:'13-17 años',fundacionResidencia:'Fundación María de la Luz',region:'Región Metropolitana',contactoNombre:'Beatriz Hernández Paz',contactoCargo:'Coordinadora de Hogar',contactoTelefono:'+56226543202',contactoEmail:'b.hernandez@mariadelaluz.cl',descripcionNecesidad:'Mochila enseñanza media, cuadernos universitarios'},
+    // ── Fundación Pléyades ──
+    {id:9,nombre:'Emilia Fuentes',edadActual:6,rangoEdad:'3-6 años',fundacionResidencia:'Fundación Pléyades',region:'Región de Valparaíso',contactoNombre:'Rodrigo Castillo Pinto',contactoCargo:'Educador',contactoTelefono:'+56322543203',contactoEmail:'r.castillo@pleyades.cl',descripcionNecesidad:'Abrigo talla 6, botas de lluvia, pijama'},
+    {id:10,nombre:'Lucas Espinoza',edadActual:11,rangoEdad:'7-12 años',fundacionResidencia:'Fundación Pléyades',region:'Región de Valparaíso',contactoNombre:'Rodrigo Castillo Pinto',contactoCargo:'Educador',contactoTelefono:'+56322543203',contactoEmail:'r.castillo@pleyades.cl',descripcionNecesidad:'Zapatos colegio talla 36, ropa deportiva'},
+    {id:11,nombre:'Nicolás Aguilera',edadActual:17,rangoEdad:'13-17 años',fundacionResidencia:'Fundación Pléyades',region:'Región de Valparaíso',contactoNombre:'Rodrigo Castillo Pinto',contactoCargo:'Educador',contactoTelefono:'+56322543203',contactoEmail:'r.castillo@pleyades.cl',descripcionNecesidad:'Abrigo talla L, zapatillas talla 40'},
+    {id:12,nombre:'Jardín Infantil Pléyades — Sala Cuna',edadActual:null,rangoEdad:'Grupo Hogar',fundacionResidencia:'Fundación Pléyades',region:'Región de Valparaíso',contactoNombre:'Rodrigo Castillo Pinto',contactoCargo:'Educador',contactoTelefono:'+56322543203',contactoEmail:'r.castillo@pleyades.cl',descripcionNecesidad:'Pañales, ropa de bebé 0-12 meses para 8 lactantes'},
+    // ── Residencia Carlos Antúnez ──
+    {id:13,nombre:'Benjamín Torres',edadActual:6,rangoEdad:'3-6 años',fundacionResidencia:'Residencia Carlos Antúnez',region:'Región Metropolitana',contactoNombre:'Marcela Vergara Soto',contactoCargo:'Coordinadora de Residencia',contactoTelefono:'+56226543204',contactoEmail:'m.vergara@residenciacarlosantunez.cl',descripcionNecesidad:'Zapatillas talla 22, pantalones y poleras talla 6'},
+    {id:14,nombre:'Matías Soto',edadActual:2,rangoEdad:'0-2 años',fundacionResidencia:'Residencia Carlos Antúnez',region:'Región Metropolitana',contactoNombre:'Marcela Vergara Soto',contactoCargo:'Coordinadora de Residencia',contactoTelefono:'+56226543204',contactoEmail:'m.vergara@residenciacarlosantunez.cl',descripcionNecesidad:'Ropa interior talla 2 años, calzado talla 20'},
+    {id:15,nombre:'Martina Vidal',edadActual:11,rangoEdad:'7-12 años',fundacionResidencia:'Residencia Carlos Antúnez',region:'Región Metropolitana',contactoNombre:'Marcela Vergara Soto',contactoCargo:'Coordinadora de Residencia',contactoTelefono:'+56226543204',contactoEmail:'m.vergara@residenciacarlosantunez.cl',descripcionNecesidad:'Cuadernos, lápices destacadores, mochila pequeña'},
+    {id:16,nombre:'Isidora Bravo',edadActual:17,rangoEdad:'13-17 años',fundacionResidencia:'Residencia Carlos Antúnez',region:'Región Metropolitana',contactoNombre:'Marcela Vergara Soto',contactoCargo:'Coordinadora de Residencia',contactoTelefono:'+56226543204',contactoEmail:'m.vergara@residenciacarlosantunez.cl',descripcionNecesidad:'Cuadernos educación técnica, mochila grande'},
+    {id:17,nombre:'Grupo Familiar Carlos Antúnez — Ala B',edadActual:null,rangoEdad:'Familia',fundacionResidencia:'Residencia Carlos Antúnez',region:'Región Metropolitana',contactoNombre:'Marcela Vergara Soto',contactoCargo:'Coordinadora de Residencia',contactoTelefono:'+56226543204',contactoEmail:'m.vergara@residenciacarlosantunez.cl',descripcionNecesidad:'Artículos para 3 niños: 4, 7 y 9 años'},
+    // ── Residencia La Goleta ──
+    {id:18,nombre:'Gabriel Ortiz',edadActual:12,rangoEdad:'7-12 años',fundacionResidencia:'Residencia La Goleta',region:'Región del Biobío',contactoNombre:'Felipe Araneda Muñoz',contactoCargo:'Coordinador de Residencia',contactoTelefono:'+56412543205',contactoEmail:'f.araneda@lagoleta.cl',descripcionNecesidad:'Zapatillas deportivas talla 37, ropa deportiva'},
+    {id:19,nombre:'Sebastián López',edadActual:18,rangoEdad:'13-17 años',fundacionResidencia:'Residencia La Goleta',region:'Región del Biobío',contactoNombre:'Felipe Araneda Muñoz',contactoCargo:'Coordinador de Residencia',contactoTelefono:'+56412543205',contactoEmail:'f.araneda@lagoleta.cl',descripcionNecesidad:'Zapatillas talla 42, ropa deportiva, calculadora científica'},
+    {id:20,nombre:'Isabella Muñoz',edadActual:4,rangoEdad:'3-6 años',fundacionResidencia:'Residencia La Goleta',region:'Región del Biobío',contactoNombre:'Felipe Araneda Muñoz',contactoCargo:'Coordinador de Residencia',contactoTelefono:'+56412543205',contactoEmail:'f.araneda@lagoleta.cl',descripcionNecesidad:'Ropa de invierno talla 4, libros de cuentos'},
+    {id:21,nombre:'Grupo Hogar La Goleta — Ingreso Marzo 2026',edadActual:null,rangoEdad:'Grupo Hogar',fundacionResidencia:'Residencia La Goleta',region:'Región del Biobío',contactoNombre:'Felipe Araneda Muñoz',contactoCargo:'Coordinador de Residencia',contactoTelefono:'+56412543205',contactoEmail:'f.araneda@lagoleta.cl',descripcionNecesidad:'Artículos primera necesidad para 5 niños entre 3 y 10 años'},
+  ];
+}
+function mockTickets(){
+  return [
+    {id:1,donacionId:2,donacionCodigo:'DON-002',articuloNombre:'Mochilas',beneficiarioNombre:'Francisca Medina',estado:'Aprobado',directorNombre:'Luis Ramírez',fechaDecision:'2026-06-10T12:00:00',motivoRechazo:null},
+    {id:2,donacionId:1,donacionCodigo:'DON-001',articuloNombre:'Abrigos',beneficiarioNombre:null,estado:'Pendiente',directorNombre:null,fechaDecision:null,motivoRechazo:null},
+  ];
+}
+
+function mockInventario(){
+  return [
+    {id:1,nombre:'Pañales Talla M',categoria:'Bebés',rangoEdad:'0-2 años',prioridad:'ALTA',stockActual:42,metaStock:100,activo:true},
+    {id:2,nombre:'Libros Infantiles',categoria:'Educación',rangoEdad:'3-12 años',prioridad:'MEDIA',stockActual:38,metaStock:60,activo:true},
+    {id:3,nombre:'Juguetes Didácticos',categoria:'Juegos',rangoEdad:'3-6 años',prioridad:'MEDIA',stockActual:15,metaStock:40,activo:true},
+    {id:4,nombre:'Ropa Talla 2-4',categoria:'Ropa',rangoEdad:'0-4 años',prioridad:'ALTA',stockActual:20,metaStock:80,activo:true},
+    {id:5,nombre:'Toallas y Sábanas',categoria:'Hogar',rangoEdad:'Todas',prioridad:'BAJA',stockActual:40,metaStock:50,activo:true},
+  ];
+}
+
+function mockHistorialEntregas(){
+  return [
+    {id:1,donacionCodigo:'DON-003',articuloNombre:'Cuadernos universitarios',cantidad:50,beneficiarioNombre:'Diego Morales',fundacionResidencia:'Fundación Padre Semería',region:'Región Metropolitana',confirmadoPor:'María González (Voluntaria)',fechaEntrega:'2026-06-10T15:30:00',observaciones:null},
+  ];
+}
+
+// ───── INVENTARIO ─────
+let filtroInvActivo = 'todos';
+
+function renderInventario(){
+  const tb = document.getElementById('tb-inventario');
+  if(!tb) return;
+  const lista = filtroInvActivo==='todos' ? inventario : inventario.filter(a=>a.prioridad===filtroInvActivo);
+  if(!lista.length){
+    tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--gray);">Sin artículos en esta categoría.</td></tr>';
+    return;
+  }
+  const prioClass = {ALTA:'prio-alta',MEDIA:'prio-media',BAJA:'prio-baja'};
+  tb.innerHTML = lista.map(a=>{
+    const pct = a.metaStock ? Math.min(Math.round((a.stockActual/a.metaStock)*100),100) : 0;
+    return `<tr>
+      <td>${a.id}</td>
+      <td><strong>${a.nombre}</strong></td>
+      <td>${a.categoria||'—'}</td>
+      <td><span class="${prioClass[a.prioridad]||'prio-baja'}">${a.prioridad||'—'}</span></td>
+      <td><strong>${a.stockActual}</strong></td>
+      <td>${a.metaStock||'—'}</td>
+      <td>
+        <span class="bar-mini" style="width:90px;"><span class="bar-mini-fill" style="width:${pct}%;display:block;"></span></span>
+        <span style="font-size:.78rem;color:var(--gray);margin-left:6px;">${pct}%</span>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filtrarInv(p, btn){
+  filtroInvActivo = p;
+  document.querySelectorAll('#panel-inventario .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderInventario();
+}
+
+// ───── TRAZABILIDAD POR ARTÍCULO (agrupa donaciones por nombre de artículo) ─────
+async function cargarTrazabilidadArticulo(){
+  renderTrazabilidadArticulo();
+}
+
+function renderTrazabilidadArticulo(){
+  const tb = document.getElementById('tb-trazabilidad-articulo');
+  if(!tb) return;
+  if(!donaciones.length){
+    tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--gray);">Sin donaciones registradas.</td></tr>';
+    return;
+  }
+  const grupos = {};
+  donaciones.forEach(d=>{
+    const nombre = d.articuloNombre || 'Sin nombre';
+    if(!grupos[nombre]) grupos[nombre] = {total:0, aprobado:0, pendiente:0, rechazado:0};
+    const cant = d.cantidad || 0;
+    grupos[nombre].total += cant;
+    if(d.estado==='Aprobado'||d.estado==='Aprobado para Entrega'||d.estado==='Asignado'||d.estado==='Entregado') grupos[nombre].aprobado += cant;
+    else if(d.estado==='Rechazado'||d.estado==='Descartado') grupos[nombre].rechazado += cant;
+    else grupos[nombre].pendiente += cant;
+  });
+
+  const metaPorArticulo = {};
+  inventario.forEach(a=>{ metaPorArticulo[a.nombre] = a.metaStock || 0; });
+
+  tb.innerHTML = Object.entries(grupos).map(([nombre, g])=>{
+    const meta = metaPorArticulo[nombre] || g.total || 1;
+    const pct = Math.min(Math.round((g.aprobado/meta)*100),100);
+    return `<tr>
+      <td><strong>${nombre}</strong></td>
+      <td>${g.total}</td>
+      <td style="color:#065F46;font-weight:800;">${g.aprobado}</td>
+      <td style="color:#92400E;font-weight:800;">${g.pendiente}</td>
+      <td style="color:#991B1B;font-weight:800;">${g.rechazado}</td>
+      <td>
+        <span class="bar-mini" style="width:90px;"><span class="bar-mini-fill" style="width:${pct}%;display:block;"></span></span>
+        <span style="font-size:.78rem;color:var(--gray);margin-left:6px;">${pct}% (${g.aprobado}/${meta})</span>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ───── HISTORIAL DE ENTREGAS ─────
+function renderHistorialEntregas(){
+  const tb = document.getElementById('tb-entregas');
+  if(!tb) return;
+  if(!historialEntregas.length){
+    tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--gray);">Sin entregas registradas aún.</td></tr>';
+    return;
+  }
+  tb.innerHTML = historialEntregas.map(h=>`<tr>
+    <td><strong>${h.donacionCodigo||'—'}</strong></td>
+    <td>${h.articuloNombre||'—'}</td>
+    <td>${h.cantidad||'—'}</td>
+    <td>${h.beneficiarioNombre||'—'}</td>
+    <td><span class="badge badge-asig">🏠 ${h.fundacionResidencia||'—'}</span></td>
+    <td style="font-size:.78rem;">${h.confirmadoPor||'—'}</td>
+    <td>${h.fechaEntrega?h.fechaEntrega.split('T')[0]:'—'}</td>
+  </tr>`).join('');
+}
+
+// ───── STATS ─────
+function actualizarStats(){
+  document.getElementById('s-total').textContent    = donaciones.length;
+  document.getElementById('s-grandes').textContent  = donaciones.filter(d=>d.cantidad>10).length;
+  document.getElementById('s-apro').textContent     = donaciones.filter(d=>d.estado==='Aprobado'||d.estado==='Aprobado para Entrega').length;
+  document.getElementById('s-asig').textContent     = donaciones.filter(d=>d.beneficiarioId).length;
+  document.getElementById('s-entregado').textContent= donaciones.filter(d=>d.estado==='Entregado').length;
+}
+
+// ───── PANEL GRANDES ─────
+function renderGrandes(){
+  const tb = document.getElementById('tb-grandes');
+  const grandes = donaciones.filter(d=>d.cantidad>10);
+  if(!grandes.length){
+    tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--gray);">Sin donaciones de más de 10 unidades.</td></tr>';
+    return;
+  }
+  tb.innerHTML = grandes.map(d=>`<tr>
+    <td><strong>${d.donId}</strong></td>
+    <td>${d.nombreDonante}</td>
+    <td>${d.articuloNombre}</td>
+    <td><span class="badge badge-grande">${d.cantidad}</span></td>
+    <td>${badge(d.estado)}</td>
+    <td>${d.beneficiarioNombre ? `<span class="badge badge-asig">👤 ${d.beneficiarioNombre}</span>` : '<span style="color:#9CA3AF;font-size:.78rem;">Sin asignar</span>'}</td>
+    <td class="acciones">
+      <button class="btn btn-ver" onclick="verDetalle(${d.id})">👁 Ver</button>
+      ${d.estado==='Pendiente'?`<button class="btn btn-apro" onclick="aprobar(${d.id})">✅ Aprobar</button><button class="btn btn-rech" onclick="rechazar(${d.id})">❌ Rechazar</button>`:''}
+      ${(d.estado==='Aprobado'||d.estado==='Aprobado para Entrega')&&!d.beneficiarioId?`<button class="btn btn-asig" onclick="abrirAsignacionDirecta(${d.id})">👤 Asignar</button>`:''}
+      ${d.beneficiarioId&&d.estado!=='Entregado'?`<button class="btn btn-ticket" onclick="abrirResolverTicket(${d.id})">🎫 Ticket</button>`:''}
+    </td>
+  </tr>`).join('');
+}
+
+// ───── PANEL BENEFICIARIOS ─────
+let benefFiltrados = [];
+function renderBeneficiarios(lista){
+  const data = lista || beneficiarios;
+  benefFiltrados = data;
+  const tb = document.getElementById('tb-beneficiarios');
+  if(!data.length){
+    tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--gray);">Sin beneficiarios registrados.</td></tr>';
+    return;
+  }
+  tb.innerHTML = data.map(b=>`<tr>
+    <td>${b.id}</td>
+    <td><strong>${b.nombre}</strong></td>
+    <td>${b.edadActual!=null?`${b.edadActual} años`:'—'} <span style="font-size:.7rem;color:var(--gray);">${b.rangoEdad||''}</span></td>
+    <td><span class="badge badge-asig">${b.fundacionResidencia||'—'}</span></td>
+    <td style="font-size:.78rem;">${b.contactoNombre||'—'}<br><span style="color:var(--gray);font-size:.7rem;">${b.contactoCargo||''}</span></td>
+    <td class="acciones">
+      <button class="btn btn-asig" onclick="abrirAsignacionBeneficiario(${b.id})">📦 Asignar donación</button>
+    </td>
+  </tr>`).join('');
+}
+
+function filtrarBeneficiarios(){
+  const txt       = document.getElementById('buscar-benef').value.toLowerCase();
+  const rango     = document.getElementById('filtro-rango').value;
+  const fundacion = document.getElementById('filtro-fundacion').value;
+  const res = beneficiarios.filter(b=>{
+    const matchTxt       = !txt   || b.nombre.toLowerCase().includes(txt) || (b.contactoNombre||'').toLowerCase().includes(txt);
+    const matchRango     = !rango || b.rangoEdad === rango || (b.rangoEdad||'').startsWith(rango);
+    const matchFundacion = !fundacion || b.fundacionResidencia === fundacion;
+    return matchTxt && matchRango && matchFundacion;
+  });
+  renderBeneficiarios(res);
+}
+
+// ───── PANEL TICKETS ─────
+function renderTickets(){
+  const tb = document.getElementById('tb-tickets');
+  if(!tickets.length){
+    tb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--gray);">Sin tickets generados.</td></tr>';
+    return;
+  }
+  tb.innerHTML = tickets.map(t=>`<tr>
+    <td><strong>#T-${String(t.id).padStart(3,'0')}</strong></td>
+    <td>${t.donacionCodigo||'—'}</td>
+    <td>${t.articuloNombre||'—'}</td>
+    <td>${t.beneficiarioNombre||'<span style="color:#9CA3AF">Sin asignar</span>'}</td>
+    <td>${badgeTicket(t.estado)}</td>
+    <td>${t.fechaDecision?(t.fechaDecision.split('T')[0]):'Pendiente'}</td>
+    <td>${t.estado==='Pendiente'?`<button class="btn btn-ticket" onclick="abrirModal_Ticket(${t.id})">🎫 Resolver</button>`:'<span style="color:#9CA3AF;font-size:.78rem;">Resuelto</span>'}</td>
+  </tr>`).join('');
+}
+
+// ───── MODAL ASIGNACIÓN ─────
+let donacionEnAsignacion = null;
+
+function poblarSelects(){
+  const selDon = document.getElementById('sel-donacion');
+  donaciones.filter(d=>d.estado==='Aprobado'||d.estado==='Aprobado para Entrega').forEach(d=>{
+    const o = document.createElement('option');
+    o.value=d.id; o.textContent=`${d.donId} — ${d.articuloNombre} (${d.cantidad} u.)`;
+    selDon.appendChild(o);
+  });
+  const selBen = document.getElementById('sel-beneficiario-asig');
+  beneficiarios.forEach(b=>{
+    const o = document.createElement('option');
+    o.value=b.id; o.textContent=`${b.nombre} (${b.edadActual} años) — ${b.fundacionResidencia||''}`;
+    selBen.appendChild(o);
+  });
+}
+
+function abrirModalAsignacion(){
+  document.getElementById('modal-asignacion').style.display='flex';
+}
+
+function abrirAsignacionDirecta(donId){
+  document.getElementById('sel-donacion').value = donId;
+  document.getElementById('modal-asignacion').style.display='flex';
+}
+
+function abrirAsignacionBeneficiario(benId){
+  document.getElementById('sel-beneficiario-asig').value = benId;
+  document.getElementById('modal-asignacion').style.display='flex';
+}
+
+async function crearTicketAsignacion(){
+  const donId = document.getElementById('sel-donacion').value;
+  const benId = document.getElementById('sel-beneficiario-asig').value;
+  const obs   = document.getElementById('obs-ticket').value;
+  if(!donId||!benId){ toast('⚠ Selecciona donación y beneficiario.'); return; }
+
+  const benef = beneficiarios.find(b=>b.id==benId);
+  const don   = donaciones.find(d=>d.id==donId);
+
+  // Actualizar localmente
+  if(don){
+    don.beneficiarioId    = parseInt(benId);
+    don.beneficiarioNombre= benef?.nombre||'—';
+    don.estado = 'Asignado';
+  }
+  // Crear ticket local
+  const newTicket = {
+    id: tickets.length+1,
+    donacionId: parseInt(donId),
+    donacionCodigo: don?.donId||'—',
+    articuloNombre: don?.articuloNombre||'—',
+    beneficiarioNombre: benef?.nombre||'—',
+    estado:'Pendiente',
+    directorNombre,
+    fechaDecision:null,
+    motivoRechazo:null,
+    observaciones: obs
+  };
+  tickets.push(newTicket);
+
+  // POST al backend
+  try{
+    await fetch(`${API_GESTION}/${donId}/asignar-beneficiario`,{
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({beneficiarioId:parseInt(benId), directorId, directorNombre, observaciones:obs})
+    });
+  }catch(e){}
+
+  document.getElementById('modal-asignacion').style.display='none';
+  actualizarStats(); renderGrandes(); renderTickets(); renderTrazabilidad(); renderReportes();
+  toast(`✅ Beneficiario "${benef?.nombre}" asignado. Ticket #T-${String(newTicket.id).padStart(3,'0')} creado.`);
+}
+
+// ───── MODAL RESOLVER TICKET ─────
+let ticketActivo = null;
+
+function abrirResolverTicket(donId){
+  const t = tickets.find(tk=>tk.donacionId===donId && tk.estado==='Pendiente');
+  if(!t){ toast('⚠ No hay ticket pendiente para esta donación.'); return; }
+  abrirModal_Ticket(t.id);
+}
+
+function abrirModal_Ticket(tId){
+  ticketActivo = tickets.find(t=>t.id===tId);
+  if(!ticketActivo) return;
+  document.getElementById('ticket-id-activo').value = tId;
+  document.getElementById('motivo-ticket').value = '';
+  document.getElementById('ticket-info').innerHTML = `
+    <p><strong>Ticket:</strong> #T-${String(tId).padStart(3,'0')}</p>
+    <p><strong>Donación:</strong> ${ticketActivo.donacionCodigo} — ${ticketActivo.articuloNombre}</p>
+    <p><strong>Beneficiario:</strong> ${ticketActivo.beneficiarioNombre||'—'}</p>`;
+  document.getElementById('modal-ticket').style.display='flex';
+}
+
+async function resolverTicket(estado){
+  const tId   = parseInt(document.getElementById('ticket-id-activo').value);
+  const motivo= document.getElementById('motivo-ticket').value;
+  const t     = tickets.find(tk=>tk.id===tId);
+  if(!t) return;
+  t.estado       = estado;
+  t.fechaDecision= new Date().toISOString();
+  t.motivoRechazo= estado==='Rechazado'?motivo:null;
+
+  const don = donaciones.find(d=>d.id===t.donacionId);
+  if(don) don.estado = estado==='Aprobado'?'Aprobado para Entrega':'Rechazado';
+
+  try{
+    await fetch(`${API_TICKETS}/${tId}/resolver`,{
+      method:'PUT', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({estado, motivo, directorNombre})
+    });
+  }catch(e){}
+
+  document.getElementById('modal-ticket').style.display='none';
+  actualizarStats(); renderGrandes(); renderTickets(); renderTrazabilidad();
+  toast(estado==='Aprobado'?'✅ Ticket aprobado. Voluntarios pueden confirmar entrega.':'❌ Ticket rechazado.');
+}
+
+// ───── ACCIONES BÁSICAS ─────
+async function aprobar(id){
+  try{ await fetch(`${API_GESTION}/${id}/aprobar`,{method:'PUT'}); }catch(e){}
+  const d=donaciones.find(x=>x.id===id); if(d) d.estado='Aprobado';
+  actualizarStats(); renderGrandes(); renderTrazabilidad(); toast('✅ Donación aprobada.');
+}
+async function rechazar(id){
+  try{ await fetch(`${API_GESTION}/${id}/rechazar`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({razon:'Rechazado por Director'})}); }catch(e){}
+  const d=donaciones.find(x=>x.id===id); if(d){ d.estado='Rechazado'; d.beneficiarioId=null; d.beneficiarioNombre=null; }
+  actualizarStats(); renderGrandes(); renderTrazabilidad(); toast('❌ Donación rechazada.');
+}
+
+// ───── RENDERS AUXILIARES ─────
+function renderTrazabilidad(){
+  document.getElementById('tb-trazabilidad').innerHTML = donaciones.map(x=>`<tr>
+    <td><strong>${x.donId}</strong></td><td>${x.nombreDonante}</td>
+    <td>${x.articuloNombre}</td><td>${x.cantidad}</td>
+    <td>${badge(x.estado)}</td>
+    <td>${x.beneficiarioNombre||'<span style="color:#9CA3AF">—</span>'}</td>
+    <td>${tickets.filter(t=>t.donacionId===x.id).map(t=>badgeTicket(t.estado)).join(' ')||'—'}</td>
+    <td>${x.entregaConfirmada?'<span class="badge badge-entregado">✓ Entregado</span>':'—'}</td>
+    <td>${(x.fechaCreacion||'').split('T')[0]||'—'}</td>
+  </tr>`).join('');
+}
+
+function renderReportes(){
+  const estados=['Pendiente','Aprobado','Asignado','Aprobado para Entrega','Entregado','Rechazado'];
+  const colores =['#F59E0B','#059669','#3730A3','#6366F1','#10B981','#DC2626'];
+  const totales =estados.map(e=>donaciones.filter(d=>d.estado===e).length);
+  const max=Math.max(...totales,1);
+  document.getElementById('chart-estados').innerHTML=estados.map((e,i)=>`
+    <div class="bar-row"><span class="bar-label">${e}</span>
+    <div class="bar-track"><div class="bar-fill" style="width:${(totales[i]/max*100).toFixed(0)}%;background:${colores[i]};">${totales[i]}</div></div>
+    <span class="bar-val">${totales[i]}</span></div>`).join('');
+
+  const artMap={};
+  donaciones.forEach(d=>{ artMap[d.articuloNombre]=(artMap[d.articuloNombre]||0)+d.cantidad; });
+  const arts=Object.entries(artMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const maxA=arts[0]?arts[0][1]:1;
+  document.getElementById('chart-articulos').innerHTML=arts.map(([n,v])=>`
+    <div class="bar-row"><span class="bar-label">${n}</span>
+    <div class="bar-track"><div class="bar-fill" style="width:${(v/maxA*100).toFixed(0)}%;background:#7C3AED;">${v}</div></div>
+    <span class="bar-val">${v}</span></div>`).join('');
+
+  const benMap={};
+  donaciones.filter(d=>d.beneficiarioNombre).forEach(d=>{ benMap[d.beneficiarioNombre]=(benMap[d.beneficiarioNombre]||0)+1; });
+  const bens=Object.entries(benMap).sort((a,b)=>b[1]-a[1]);
+  const maxB=bens[0]?bens[0][1]:1;
+  document.getElementById('chart-beneficiarios').innerHTML=bens.length?bens.map(([n,v])=>`
+    <div class="bar-row"><span class="bar-label">${n}</span>
+    <div class="bar-track"><div class="bar-fill" style="width:${(v/maxB*100).toFixed(0)}%;background:#3730A3;">${v}</div></div>
+    <span class="bar-val">${v}</span></div>`).join(''):'<p style="text-align:center;padding:20px;color:var(--gray);">Sin asignaciones aún.</p>';
+}
+
+function verDetalle(id){
+  const d=donaciones.find(x=>x.id===id); if(!d) return;
+  const ben = d.beneficiarioId ? beneficiarios.find(b=>b.id===d.beneficiarioId) : null;
+  const ticket = tickets.find(t=>t.donacionId===d.id);
+  document.getElementById('dir-detalle').innerHTML=`
+    <div style="font-size:.85rem;display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:12px;">
+      <p><strong>Código:</strong> ${d.donId}</p><p><strong>Estado:</strong> ${badge(d.estado)}</p>
+      <p><strong>Donante:</strong> ${d.nombreDonante}</p><p><strong>Cantidad:</strong> ${d.cantidad}</p>
+      <p><strong>Artículo:</strong> ${d.articuloNombre}</p><p><strong>Fecha:</strong> ${(d.fechaCreacion||'').split('T')[0]||'—'}</p>
+    </div>
+    ${ben?`<div class="ticket-card ${ticket?.estado?.toLowerCase()||'pend'}">
+      <p style="font-size:.78rem;font-weight:800;color:var(--gray);margin-bottom:8px;">👤 BENEFICIARIO ASIGNADO</p>
+      <p><strong>${ben.nombre}</strong> — ${ben.edadActual} años</p>
+      <p style="font-size:.8rem;color:var(--gray);">🏠 ${ben.fundacionResidencia||''}</p>
+      <p style="font-size:.78rem;color:var(--gray);">📞 ${ben.contactoNombre||''} — ${ben.contactoCargo||''}</p>
+      ${ticket?`<p style="margin-top:8px;font-size:.8rem;"><strong>Ticket:</strong> #T-${String(ticket.id).padStart(3,'0')} — ${badgeTicket(ticket.estado)}</p>`:''}
+    </div>`:'<p style="font-size:.82rem;color:#9CA3AF;margin-top:10px;">⚠ Sin beneficiario asignado aún.</p>'}
+    ${d.entregaConfirmada?`<div style="background:#D1FAE5;padding:10px 14px;border-radius:8px;margin-top:10px;font-size:.83rem;"><strong>✅ Entrega confirmada</strong> por ${d.confirmadoPor||'—'}</div>`:''}`;
+  document.getElementById('dir-overlay').style.display='flex';
+}
+
+// ───── BADGES ─────
+function badge(e){
+  const m={'Pendiente':'badge-pend','Aprobado':'badge-apro','Rechazado':'badge-rech',
+           'Asignado':'badge-asig','Aprobado para Entrega':'badge-asig','Entregado':'badge-entregado'};
+  return `<span class="badge ${m[e]||'badge-pend'}">${e}</span>`;
+}
+function badgeTicket(e){
+  const m={'Pendiente':'badge-pend','Aprobado':'badge-apro','Rechazado':'badge-rech'};
+  return `<span class="badge ${m[e]||'badge-pend'}">${e}</span>`;
+}
+
+// ───── NAVEGACIÓN ─────
+function setPanel(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3500); }
+
+cargar();
+</script>
+</body>
+</html>

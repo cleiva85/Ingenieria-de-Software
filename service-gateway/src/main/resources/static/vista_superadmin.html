@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Abrázame — Super Administrador</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--navy:#1E3A5F;--navy-dark:#142844;--navy-light:#E8EEF5;--gold:#B8860B;
+      --green:#8DC5A0;--green-dark:#6aaa85;--green-light:#EBF5EE;
+      --white:#fff;--gray:#6B7280;--border:#E5E7EB;--text:#1E293B;--radius:10px;
+      --error:#DC2626;--error-bg:#FEF2F2;--success:#059669;--success-bg:#ECFDF5;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Nunito',sans-serif;background:#F3F4F6;min-height:100vh;}
+    .topbar{background:linear-gradient(135deg,var(--navy-dark),var(--navy));display:flex;align-items:center;gap:14px;padding:0 28px;height:56px;}
+    .topbar-logo{display:flex;align-items:center;gap:10px;}
+    .topbar-logo svg{width:34px;height:34px;}
+    .topbar-logo span{color:#fff;font-weight:900;font-size:1rem;}
+    .topbar-badge{background:linear-gradient(135deg,var(--gold),#D4A017);color:#fff;font-size:.7rem;font-weight:800;padding:3px 12px;border-radius:50px;letter-spacing:.07em;}
+    .topbar-user{margin-left:auto;color:rgba(255,255,255,.85);font-size:.78rem;}
+    .btn-logout{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);color:#fff;font-family:'Nunito',sans-serif;font-size:.75rem;font-weight:800;padding:6px 16px;border-radius:50px;cursor:pointer;margin-left:12px;}
+    .btn-logout:hover{background:rgba(255,255,255,.22);}
+    .content{max-width:1000px;margin:0 auto;padding:24px 16px 60px;}
+    .page-title{font-size:1.3rem;font-weight:900;color:var(--text);margin-bottom:4px;}
+    .page-sub{font-size:.82rem;color:var(--gray);margin-bottom:24px;}
+    /* TABS */
+    .tabs{display:flex;gap:4px;margin-bottom:24px;flex-wrap:wrap;}
+    .tab{padding:9px 22px;border-radius:50px;border:2px solid var(--border);background:#fff;font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:800;cursor:pointer;color:var(--gray);transition:all .2s;}
+    .tab.active,.tab:hover{background:var(--navy);color:#fff;border-color:var(--navy);}
+    /* STATS */
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
+    .stat{background:#fff;border-radius:12px;padding:18px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+    .stat .num{font-size:1.8rem;font-weight:900;color:var(--navy);}
+    .stat .lbl{font-size:.72rem;font-weight:800;color:var(--gray);text-transform:uppercase;margin-top:4px;}
+    /* SECTION */
+    .sec{background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:22px;overflow:hidden;}
+    .sec-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);background:#F9FAFB;}
+    .sec-head h2{font-size:.88rem;font-weight:900;color:var(--text);text-transform:uppercase;letter-spacing:.05em;}
+    table{width:100%;border-collapse:collapse;}
+    th{font-size:.72rem;font-weight:800;color:var(--gray);text-transform:uppercase;padding:10px 16px;text-align:left;background:#F9FAFB;border-bottom:1px solid var(--border);}
+    td{padding:12px 16px;font-size:.83rem;color:var(--text);border-bottom:1px solid #F3F4F6;vertical-align:middle;}
+    tr:last-child td{border-bottom:none;}tr:hover td{background:#f8f9fc;}
+    .badge{display:inline-block;padding:3px 10px;border-radius:50px;font-size:.72rem;font-weight:800;}
+    .rol-vol{background:#DBEAFE;color:#1E40AF;}.rol-admin{background:#EBF5EE;color:#065F46;}
+    .rol-dir{background:#F5F3FF;color:#5B21B6;}.rol-super{background:linear-gradient(135deg,#FDF8EC,#FEFCE8);color:#92400E;}
+    .rol-activo{background:#D1FAE5;color:#065F46;}.rol-inactivo{background:#FEE2E2;color:#991B1B;}
+    /* FORM nueva cuenta */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:20px;}
+    .form-grid .full{grid-column:1/-1;}
+    label{display:block;font-size:.78rem;font-weight:800;color:var(--text);margin-bottom:5px;}
+    input[type=text],input[type=email],input[type=password],select{
+      width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius);
+      font-family:'Nunito',sans-serif;font-size:.85rem;color:var(--text);outline:none;}
+    input:focus,select:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(30,58,95,.1);}
+    /* BTNS */
+    .btn{display:inline-flex;align-items:center;gap:5px;padding:8px 18px;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-size:.78rem;font-weight:800;cursor:pointer;transition:all .15s;}
+    .btn-primary{background:var(--navy);color:#fff;}  .btn-primary:hover{background:var(--navy-dark);}
+    .btn-ver{background:var(--navy-light);color:var(--navy);}  .btn-ver:hover{background:#C8D8E8;}
+    .btn-del{background:var(--error-bg);color:var(--error);}  .btn-del:hover{background:#FECACA;}
+    .acciones{display:flex;gap:6px;}
+    /* MODAL */
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;}
+    .overlay.open{display:flex;}
+    .modal{background:#fff;border-radius:18px;padding:32px;max-width:460px;width:90%;position:relative;}
+    .modal h3{font-size:1.1rem;font-weight:900;color:var(--text);margin-bottom:16px;}
+    .modal p{font-size:.88rem;color:var(--gray);margin-bottom:8px;line-height:1.6;}
+    .modal-close{position:absolute;top:14px;right:14px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:#aaa;}
+    .modal-row{display:flex;gap:10px;margin-top:20px;}
+    .panel{display:none;}.panel.active{display:block;}
+    .alert{padding:10px 14px;border-radius:var(--radius);font-size:.82rem;font-weight:700;margin-bottom:14px;display:none;}
+    .alert.show{display:block;}.alert-ok{background:var(--success-bg);color:var(--success);}.alert-err{background:var(--error-bg);color:var(--error);}
+    .toast{display:none;position:fixed;bottom:28px;right:28px;background:var(--navy);color:#fff;padding:12px 22px;border-radius:10px;font-weight:700;font-size:.85rem;z-index:999;}
+    .toast.show{display:block;animation:fi .3s;}
+    @keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+      <path d="M50 18 A34 34 0 0 1 84 68" stroke="#8DC5A0" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <path d="M16 68 A34 34 0 0 1 50 18" stroke="#E8A0B0" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <path d="M84 68 A34 34 0 0 1 16 68" stroke="#C4A8D4" stroke-width="8" fill="none" stroke-linecap="round"/>
+      <circle cx="50" cy="14" r="7" fill="#8DC5A0"/>
+      <circle cx="13" cy="70" r="7" fill="#E8A0B0"/>
+      <circle cx="87" cy="70" r="7" fill="#C4A8D4"/>
+      <circle cx="50" cy="46" r="10" fill="#fff"/>
+      <path d="M45 50 Q50 55 55 50" stroke="#6B7CA4" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>
+    <span>Abrázame</span>
+  </div>
+  <span class="topbar-badge">🔑 SUPER ADMIN</span>
+  <span class="topbar-user">Super Administrador</span>
+  <button class="btn-logout" onclick="window.location.href='login_usuario.html'">Cerrar sesión</button>
+</div>
+
+<div class="content">
+  <p class="page-title">Panel Super Administrador</p>
+  <p class="page-sub">Gestión de cuentas del sistema: crear credenciales, visualizar y eliminar usuarios.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="num" id="s-total">—</div><div class="lbl">Total usuarios</div></div>
+    <div class="stat"><div class="num" id="s-activos" style="color:#059669;">—</div><div class="lbl">Activos</div></div>
+    <div class="stat"><div class="num" id="s-inactivos" style="color:#DC2626;">—</div><div class="lbl">Inactivos</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="setPanel('usuarios',this)">👥 Ver Usuarios</button>
+    <button class="tab" onclick="setPanel('nueva',this)">➕ Nueva Cuenta</button>
+  </div>
+
+  <!-- PANEL: VER USUARIOS -->
+  <div class="panel active" id="panel-usuarios">
+    <div class="sec">
+      <div class="sec-head">
+        <h2>👥 Cuentas del Sistema</h2>
+        <input type="text" id="busq" placeholder="Buscar por nombre o correo…" style="max-width:260px;padding:7px 12px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Nunito',sans-serif;font-size:.82rem;outline:none;" oninput="renderUsuarios()">
+      </div>
+      <table>
+        <thead><tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody id="tb-usuarios"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PANEL: NUEVA CUENTA -->
+  <div class="panel" id="panel-nueva">
+    <div class="sec">
+      <div class="sec-head"><h2>➕ Crear Nueva Cuenta de Acceso</h2></div>
+      <div class="form-grid">
+        <div class="alert full" id="alertNueva"></div>
+        <div>
+          <label>Primer Nombre *</label>
+          <input type="text" id="n-nombre" placeholder="Ej: María">
+        </div>
+        <div>
+          <label>Segundo Nombre</label>
+          <input type="text" id="n-nombre2" placeholder="Opcional">
+        </div>
+        <div>
+          <label>Apellido Paterno *</label>
+          <input type="text" id="n-apellidoP" placeholder="Ej: González">
+        </div>
+        <div>
+          <label>Apellido Materno *</label>
+          <input type="text" id="n-apellidoM" placeholder="Ej: Muñoz">
+        </div>
+        <div>
+          <label>RUT *</label>
+          <input type="text" id="n-rut" placeholder="12.345.678-9">
+        </div>
+        <div>
+          <label>Correo electrónico *</label>
+          <input type="email" id="n-email" placeholder="usuario@abrazame.org">
+        </div>
+        <div>
+          <label>Rol *</label>
+          <select id="n-rol">
+            <option value="">— Selecciona el rol —</option>
+            <option value="Voluntario">🙋 Voluntario/a</option>
+            <option value="Admin">👩‍💼 Administrador/a</option>
+            <option value="Director">📋 Director/a</option>
+          </select>
+        </div>
+        <div>
+          <label>Contraseña *</label>
+          <input type="password" id="n-pass" placeholder="Mín. 8 caracteres">
+        </div>
+        <div class="full">
+          <label>Confirmar Contraseña *</label>
+          <input type="password" id="n-pass2" placeholder="Repite la contraseña">
+        </div>
+        <div class="full">
+          <button class="btn btn-primary" onclick="crearCuenta()" style="margin-top:4px;">Crear Cuenta</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VER DETALLE -->
+<div class="overlay" id="modalVer">
+  <div class="modal" style="max-width:420px;">
+    <button class="modal-close" onclick="cerrarModal('modalVer')">✕</button>
+    <h3 style="margin-bottom:16px;">👁 Detalle de Usuario</h3>
+    <div id="modal-ver-body"></div>
+    <div style="margin-top:20px;text-align:right;">
+      <button class="btn btn-primary" onclick="cerrarModal('modalVer')" style="padding:10px 24px;">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAR ELIMINACIÓN -->
+<div class="overlay" id="modalDel">
+  <div class="modal">
+    <button class="modal-close" onclick="cerrarModal('modalDel')">✕</button>
+    <h3>🗑 Eliminar cuenta</h3>
+    <p id="del-msg">¿Seguro que deseas eliminar esta cuenta? Esta acción no se puede deshacer.</p>
+    <div class="modal-row">
+      <button class="btn btn-del" style="flex:1" onclick="confirmarEliminar()">Sí, eliminar</button>
+      <button class="btn" style="background:#F3F4F6;color:var(--gray);flex:1" onclick="cerrarModal('modalDel')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_AUTH = 'http://'+window.location.hostname+':9090/auth/usuarios';
+let usuarios = [];
+let delTarget = null;
+
+async function cargar(){
+  try{
+    const res = await fetch(API_AUTH);
+    usuarios = await res.json();
+  } catch(e){
+    // Demo data
+    usuarios = [
+      {id:1,nombre:'Admin Principal',email:'admin@abrazame.org',rol:'Admin',activo:true},
+      {id:2,nombre:'María Director',email:'director@abrazame.org',rol:'Director',activo:true},
+      {id:3,nombre:'Super Admin',email:'super@abrazame.org',rol:'SuperAdmin',activo:true},
+      {id:4,nombre:'Ana Voluntaria',email:'ana@abrazame.org',rol:'Voluntario',activo:true},
+      {id:5,nombre:'Pedro Inactivo',email:'pedro@abrazame.org',rol:'Voluntario',activo:false},
+    ];
+  }
+  actualizarStats();
+  renderUsuarios();
+}
+
+function actualizarStats(){
+  document.getElementById('s-total').textContent   = usuarios.length;
+  document.getElementById('s-activos').textContent  = usuarios.filter(u=>u.activo).length;
+  document.getElementById('s-inactivos').textContent = usuarios.filter(u=>!u.activo).length;
+}
+
+function badgeRol(r){const m={Voluntario:'rol-vol',Admin:'rol-admin',Director:'rol-dir',SuperAdmin:'rol-super'};return `<span class="badge ${m[r]||''}">${r}</span>`;}
+function badgeActivo(a){return `<span class="badge ${a?'rol-activo':'rol-inactivo'}">${a?'Activo':'Inactivo'}</span>`;}
+
+function renderUsuarios(){
+  const q = (document.getElementById('busq').value||'').toLowerCase();
+  let data = usuarios;
+  if(q) data = data.filter(u=>(u.nombre||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q));
+  const t = document.getElementById('tb-usuarios');
+  if(!data.length){t.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--gray);">No se encontraron usuarios.</td></tr>';return;}
+  t.innerHTML = data.map(u=>`<tr>
+    <td>${u.id}</td>
+    <td><strong>${u.nombre||'—'}</strong></td>
+    <td>${u.email||'—'}</td>
+    <td>${badgeRol(u.rol)}</td>
+    <td>${badgeActivo(u.activo)}</td>
+    <td><div class="acciones">
+      <button class="btn btn-ver" onclick="verDetalle(${u.id})">👁 Ver</button>
+      <button class="btn btn-del" onclick="pedirEliminar(${u.id})">🗑 Eliminar</button>
+    </div></td>
+  </tr>`).join('');
+}
+
+function verDetalle(id){
+  const u = usuarios.find(x=>x.id===id);
+  if(!u) return;
+  document.getElementById('modal-ver-body').innerHTML = `
+    <table style="width:100%;border-collapse:collapse;font-size:.88rem;">
+      <tr><td style="padding:8px 12px;color:#6B7280;font-weight:700;width:120px;">ID</td><td style="padding:8px 12px;">${u.id}</td></tr>
+      <tr style="background:#f9fafb"><td style="padding:8px 12px;color:#6B7280;font-weight:700;">Nombre</td><td style="padding:8px 12px;font-weight:800;">${u.nombre||'—'}</td></tr>
+      <tr><td style="padding:8px 12px;color:#6B7280;font-weight:700;">Correo</td><td style="padding:8px 12px;">${u.email||'—'}</td></tr>
+      <tr style="background:#f9fafb"><td style="padding:8px 12px;color:#6B7280;font-weight:700;">Rol</td><td style="padding:8px 12px;">${badgeRol(u.rol)}</td></tr>
+      <tr><td style="padding:8px 12px;color:#6B7280;font-weight:700;">Estado</td><td style="padding:8px 12px;">${badgeActivo(u.activo)}</td></tr>
+    </table>`;
+  document.getElementById('modalVer').classList.add('open');
+}
+
+function pedirEliminar(id){
+  delTarget = id;
+  const u = usuarios.find(x=>x.id===id);
+  document.getElementById('del-msg').textContent = `¿Seguro que deseas eliminar la cuenta de ${u?.nombre||'este usuario'}? Esta acción no se puede deshacer.`;
+  document.getElementById('modalDel').classList.add('open');
+}
+
+async function confirmarEliminar(){
+  if(!delTarget) return;
+  try{ await fetch(`${API_AUTH}/${delTarget}`,{method:'DELETE'}); }catch(e){}
+  usuarios = usuarios.filter(u=>u.id!==delTarget);
+  actualizarStats(); renderUsuarios(); cerrarModal('modalDel');
+  toast('🗑 Cuenta eliminada correctamente.');
+}
+
+async function crearCuenta(){
+  const nombre    = document.getElementById('n-nombre').value.trim();
+  const nombre2   = document.getElementById('n-nombre2').value.trim();
+  const apellidoP = document.getElementById('n-apellidoP').value.trim();
+  const apellidoM = document.getElementById('n-apellidoM').value.trim();
+  const rut       = document.getElementById('n-rut').value.trim();
+  const email     = document.getElementById('n-email').value.trim();
+  const rol       = document.getElementById('n-rol').value;
+  const pass      = document.getElementById('n-pass').value;
+  const pass2     = document.getElementById('n-pass2').value;
+  const alerta    = document.getElementById('alertNueva');
+  const show      = (msg,tipo)=>{ alerta.textContent=msg; alerta.className=`alert alert-${tipo} show full`; };
+
+  if(!nombre||!apellidoP||!apellidoM||!email||!rol||!pass){
+    show('⚠️ Nombre, apellidos, correo, rol y contraseña son obligatorios.','err'); return;
+  }
+  if(pass.length<8){ show('⚠️ La contraseña debe tener al menos 8 caracteres.','err'); return; }
+  if(pass!==pass2){ show('⚠️ Las contraseñas no coinciden.','err'); return; }
+
+  try{
+    const res = await fetch('http://'+window.location.hostname+':9090/auth/register',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({nombre, nombre2, apellidoP, apellidoM, rut, email, password:pass, rol})
+    });
+    const data = await res.json();
+    if(data && data.success){
+      show('✅ Cuenta creada exitosamente. La persona ya puede iniciar sesión.','ok');
+      ['n-nombre','n-nombre2','n-apellidoP','n-apellidoM','n-rut','n-email','n-pass','n-pass2']
+        .forEach(id=>document.getElementById(id).value='');
+      document.getElementById('n-rol').value='';
+      cargar();
+      // Auto-cambiar al tab "Ver Usuarios" después de 1.5s
+      setTimeout(()=>{
+        const tabVer = document.querySelector('.tab');
+        if(tabVer) setPanel('usuarios', tabVer);
+      }, 1500);
+    } else {
+      show('❌ '+(data?.mensaje || 'Error al crear la cuenta. Verifica que el correo o RUT no estén duplicados.'), 'err');
+    }
+  } catch(e){
+    // Modo demo: si el backend no responde, simular creación exitosa
+    const nombreCompleto = nombre+' '+apellidoP+' '+apellidoM;
+    const newUser = {id:Date.now(), nombre:nombreCompleto, email, rol, activo:true};
+    usuarios.push(newUser); actualizarStats(); renderUsuarios();
+    show('✅ Cuenta creada en modo demo. Levanta service-auth para persistir en BD.','ok');
+    // Auto-cambiar al tab "Ver Usuarios" después de 1.5s
+    setTimeout(()=>{
+      const tabVer = document.querySelector('.tab');
+      if(tabVer) setPanel('usuarios', tabVer);
+    }, 1500);
+  }
+}
+
+function cerrarModal(id){ document.getElementById(id).classList.remove('open'); }
+function setPanel(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
+
+cargar();
+</script>
+</body>
+</html>

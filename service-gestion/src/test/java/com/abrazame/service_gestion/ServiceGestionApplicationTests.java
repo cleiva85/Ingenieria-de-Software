@@ -1,0 +1,10 @@
+package com.abrazame.service_gestion;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class ServiceGestionApplicationTests {
+    @Test
+    void contextLoads() {}
+}

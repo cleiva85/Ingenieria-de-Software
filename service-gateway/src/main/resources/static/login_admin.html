@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fundación Abrázame — Acceso Administrativo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --navy:#1E3A5F;--navy-dark:#142844;--navy-light:#E8EEF5;
+      --gold:#B8860B;--gold-dark:#8B6508;--gold-light:#FDF8EC;
+      --green:#8DC5A0;--green-dark:#6aaa85;
+      --gray:#6B7280;--border:#D1D9E6;--text:#1E293B;--radius:10px;
+      --error:#DC2626;--error-bg:#FEF2F2;--error-border:#FECACA;
+      --success:#059669;--success-bg:#ECFDF5;--success-border:#6EE7B7;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Nunito',sans-serif;background:linear-gradient(135deg,#142844 0%,#1E3A5F 60%,#2D5282 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px 60px;}
+    .card{width:100%;max-width:460px;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.35);}
+    .header{background:linear-gradient(135deg,var(--navy-dark),var(--navy));padding:28px 32px 24px;display:flex;align-items:center;gap:16px;}
+    .logo-wrap{width:62px;height:62px;flex-shrink:0;background:rgba(255,255,255,0.12);border:2px solid rgba(255,255,255,0.2);border-radius:14px;display:flex;align-items:center;justify-content:center;}
+    .logo-wrap span{font-size:1.9rem;}
+    .header-text h1{font-weight:800;font-size:1.35rem;color:#fff;}
+    .header-text p{font-size:0.72rem;letter-spacing:0.12em;color:rgba(255,255,255,0.6);margin-top:3px;text-transform:uppercase;}
+    .header-badge{margin-left:auto;background:rgba(184,134,11,0.2);border:1px solid rgba(184,134,11,0.4);border-radius:8px;padding:6px 12px;font-size:0.7rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#F0C040;white-space:nowrap;}
+    .role-banner{background:var(--navy-light);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;}
+    .role-pill{font-size:0.72rem;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;padding:4px 12px;border-radius:50px;}
+    .pill-admin{background:#1E3A5F;color:#fff;}
+    .pill-director{background:#7C3AED;color:#fff;}
+    .pill-super{background:linear-gradient(135deg,#B8860B,#D4A017);color:#fff;}
+    .form-body{padding:28px 32px 32px;}
+    .sec-badge{display:flex;align-items:center;gap:10px;background:var(--navy-light);border:1px solid var(--border);border-left:4px solid var(--navy);border-radius:8px;padding:10px 14px;margin-bottom:22px;font-size:0.77rem;color:var(--navy);font-weight:700;}
+    .field{margin-bottom:16px;}
+    .field label{display:block;font-size:0.79rem;font-weight:800;color:var(--text);margin-bottom:5px;}
+    .req{color:var(--error);margin-left:2px;}
+    input[type="text"],input[type="email"],input[type="password"],select{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Nunito',sans-serif;font-size:0.88rem;color:var(--text);background:#fff;transition:border-color 0.2s,box-shadow 0.2s;outline:none;}
+    input::placeholder{color:#A0AEC0;}
+    input:focus,select:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(30,58,95,0.15);}
+    select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:38px;}
+    .field-error{font-size:0.73rem;color:var(--error);margin-top:4px;display:none;}
+    .field-error.show{display:block;}
+    .pass-wrap{position:relative;}
+    .pass-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--gray);}
+    .rol-info-card{border-radius:8px;padding:10px 14px;margin-top:8px;font-size:0.76rem;display:none;border-left:3px solid;}
+    .rol-info-card.show{display:block;}
+    .rol-info-card.admin{background:#EFF6FF;border-color:#1E3A5F;color:#1E3A5F;}
+    .rol-info-card.director{background:#F5F3FF;border-color:#7C3AED;color:#5B21B6;}
+    .rol-info-card.super{background:var(--gold-light);border-color:var(--gold);color:var(--gold-dark);}
+    .submit-btn{width:100%;background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;font-family:'Nunito',sans-serif;font-size:0.9rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:15px 24px;border:none;border-radius:50px;cursor:pointer;margin-top:22px;transition:opacity 0.2s,transform 0.15s;box-shadow:0 4px 20px rgba(30,58,95,0.4);display:flex;align-items:center;justify-content:center;gap:8px;}
+    .submit-btn:hover{opacity:0.9;transform:translateY(-2px);}
+    .submit-btn.loading{opacity:0.6;cursor:not-allowed;pointer-events:none;}
+    .spinner{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;}
+    .submit-btn.loading .spinner{display:inline-block;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .link-btn{display:block;text-align:center;margin-top:14px;font-size:0.82rem;color:var(--gray);font-weight:600;cursor:pointer;background:none;border:none;width:100%;text-decoration:underline;}
+    .link-btn:hover{color:var(--navy);}
+    .alert{padding:12px 16px;border-radius:var(--radius);font-size:0.82rem;font-weight:700;margin-bottom:16px;display:none;}
+    .alert.show{display:block;}
+    .alert-ok{background:var(--success-bg);color:var(--success);border:1px solid var(--success-border);}
+    .alert-err{background:var(--error-bg);color:var(--error);border:1px solid var(--error-border);}
+    .security-note{display:flex;align-items:center;gap:8px;background:#F0F4FF;border:1px solid #C3D1F0;border-radius:8px;padding:8px 12px;margin-top:16px;font-size:0.73rem;color:#374151;}
+    /* SUCCESS */
+    .success-overlay{display:none;position:fixed;inset:0;background:rgba(14,30,60,0.6);backdrop-filter:blur(6px);z-index:99999;align-items:center;justify-content:center;}
+    .success-overlay.show{display:flex;}
+    .success-box{background:#fff;border-radius:24px;padding:44px 36px 36px;max-width:380px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);border-top:4px solid var(--navy);}
+    .success-icon{width:72px;height:72px;background:linear-gradient(135deg,var(--navy),var(--navy-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:2rem;}
+    .success-box h2{font-weight:800;font-size:1.3rem;color:var(--text);margin-bottom:8px;}
+    .success-box p{font-size:0.88rem;color:var(--gray);line-height:1.6;margin-bottom:24px;}
+    .success-close{background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;border:none;border-radius:50px;padding:13px 36px;font-family:'Nunito',sans-serif;font-size:0.88rem;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;}
+    .footer-link{text-align:center;padding:14px 32px 20px;border-top:1px solid var(--border);background:var(--navy-light);}
+    .footer-link p{font-size:0.78rem;color:var(--gray);}
+    .footer-link a{color:var(--navy);font-weight:800;text-decoration:underline;}
+    @media(max-width:520px){.form-body{padding:22px 18px 26px;}.header{padding:20px 18px 16px;}}
+  </style>
+</head>
+<body>
+
+<script>const API = 'http://'+window.location.hostname+':8081/auth';</script>
+
+<!-- SUCCESS overlay -->
+<div class="success-overlay" id="loginOverlay">
+  <div class="success-box">
+    <div class="success-icon">🔑</div>
+    <h2>Acceso concedido</h2>
+    <p id="loginMsg">Redirigiendo al panel…</p>
+    <button class="success-close" id="loginRedirectBtn">Ir al panel →</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="header">
+    <div class="logo-wrap"><span>🤗</span></div>
+    <div class="header-text">
+      <h1>Fundación Abrázame</h1>
+      <p>Portal Administrativo</p>
+    </div>
+    <div class="header-badge">Acceso Restringido</div>
+  </div>
+  <div class="role-banner">
+    <span class="role-pill pill-admin">Admin</span>
+    <span class="role-pill pill-director">Director</span>
+    <span class="role-pill pill-super">SuperAdmin</span>
+  </div>
+  <div class="form-body">
+    <div class="sec-badge"><span>🛡️</span><div>Acceso exclusivo para personal interno. Actividad auditada.</div></div>
+    <div id="alertLogin" class="alert"></div>
+
+    <div class="field"><label>Correo Institucional <span class="req">*</span></label><input type="email" id="l_email" placeholder="usuario@abrazame.org" oninput="validateEmailLive(this,'err_email_l')"/><div class="field-error" id="err_email_l">Correo inválido.</div></div>
+    <div class="field"><label>Contraseña <span class="req">*</span></label><div class="pass-wrap"><input type="password" id="l_pass" placeholder="Tu contraseña"/><button class="pass-toggle" type="button" onclick="togglePass()">👁️</button></div><div class="field-error" id="err_l_pass">Ingresa tu contraseña.</div></div>
+    <div class="field">
+      <label>Rol Administrativo <span class="req">*</span></label>
+      <select id="l_rol" onchange="onRolChange()">
+        <option value="">— Selecciona tu rol —</option>
+        <option value="Admin">Admin</option>
+        <option value="Director">Director</option>
+        <option value="SuperAdmin">SuperAdmin</option>
+      </select>
+      <div class="field-error" id="err_l_rol">Selecciona tu rol.</div>
+      <div class="rol-info-card admin" id="info_admin"><strong>Admin:</strong> gestión de agenda, usuarios, notificaciones y reportes.</div>
+      <div class="rol-info-card director" id="info_director"><strong>Director:</strong> validación de donaciones, inventario y supervisión operacional.</div>
+      <div class="rol-info-card super" id="info_super"><strong>SuperAdmin:</strong> control total — accesos, auditoría y configuración global.</div>
+    </div>
+
+    <button class="submit-btn" id="btnLogin" onclick="doLogin()"><span class="spinner"></span>Acceder al Panel</button>
+    <button class="link-btn" onclick="showRecover()">¿Olvidaste tu contraseña?</button>
+    <div class="security-note">Todos los accesos quedan registrados en el log de auditoría.</div>
+  </div>
+  <div class="footer-link">
+    <p>¿Eres voluntario/a? <a href="login_voluntario.html">← Portal Voluntarios</a></p>
+  </div>
+</div>
+
+<script>
+function validateEmailLive(inp,errId){const ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inp.value.trim());inp.classList.toggle('error-inp',inp.value.length>2&&!ok);inp.classList.toggle('valid-inp',ok);showErr(errId,inp.value.length>2&&!ok);}
+function showAlert(id,msg,type){const el=document.getElementById(id);el.textContent=msg;el.className='alert alert-'+(type||'err')+' show';}
+function clearAlerts(){document.querySelectorAll('.alert').forEach(e=>e.classList.remove('show'));}
+function showErr(id,show=true){const el=document.getElementById(id);if(el)el.classList.toggle('show',show);}
+function togglePass(){const i=document.getElementById('l_pass');const b=document.querySelector('.pass-toggle');i.type=i.type==='password'?'text':'password';b.textContent=i.type==='text'?'🙈':'👁️';}
+function onRolChange(){
+  const rol=document.getElementById('l_rol').value;
+  ['admin','director','super'].forEach(r=>document.getElementById('info_'+r).classList.remove('show'));
+  if(rol==='Admin') document.getElementById('info_admin').classList.add('show');
+  if(rol==='Director') document.getElementById('info_director').classList.add('show');
+  if(rol==='SuperAdmin') document.getElementById('info_super').classList.add('show');
+}
+
+async function doLogin(){
+  clearAlerts();
+  const email=document.getElementById('l_email').value.trim();
+  const pass=document.getElementById('l_pass').value;
+  const rol=document.getElementById('l_rol').value;
+  let ok=true;
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showErr('err_email_l');ok=false;}else showErr('err_email_l',false);
+  if(!pass){showErr('err_l_pass');ok=false;}else showErr('err_l_pass',false);
+  if(!rol){showErr('err_l_rol');ok=false;}else showErr('err_l_rol',false);
+  if(!ok) return;
+
+  const btn=document.getElementById('btnLogin');
+  btn.classList.add('loading');
+  try {
+    const res = await fetch(API+'/login',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({email, password: pass, rol})
+    });
+    const data = await res.json();
+    if(data.success){
+      document.getElementById('loginMsg').innerHTML=
+        `Acceso concedido como <strong>${data.nombre}</strong> (${data.rol}). Redirigiendo al panel…`;
+      document.getElementById('loginOverlay').classList.add('show');
+      document.getElementById('loginRedirectBtn').onclick=()=>{ window.location.href=data.redirectUrl; };
+    } else {
+      showAlert('alertLogin',''+data.mensaje,'err');
+    }
+  } catch(e){
+    showAlert('alertLogin','No se pudo conectar con el servidor. Verifica que service-auth esté corriendo en el puerto 8081.','err');
+  } finally {
+    btn.classList.remove('loading');
+  }
+}
+
+function showRecover(){
+  showAlert('alertLogin','Contacta al administrador del sistema para recuperar tu acceso.','err');
+}
+
+['l_email','l_pass'].forEach(id=>{
+  document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter') doLogin();});
+});
+</script>
+</body>
+</html>
